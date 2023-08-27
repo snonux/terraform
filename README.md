@@ -1,3 +1,7 @@
-# terraform
+# Terraform playground
 
-Some personal terraform files for my infra and lab environment. 
+Maybe one day I can:
+
+* Setup NextCloud
+* Setup AnkiDroid
+* Setup Wallabag
