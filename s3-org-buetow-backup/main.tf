@@ -36,7 +36,7 @@ resource "aws_iam_user_policy" "backup_iam_user_policy" {
           "s3:PutObject",
           "s3:GetObject",
           "s3:ListBucket",
-          "s3:RestoreObject"
+          "s3:RestoreObject",
         ]
         Effect = "Allow"
         Resource = [
