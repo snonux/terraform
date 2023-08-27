@@ -46,7 +46,7 @@ resource "aws_route53_zone" "my_zone" {
 
 resource "aws_route53_record" "my_record" {
   zone_id = aws_route53_zone.my_zone.zone_id
-  name    = "my-instance.aws.buetow.org" # Replace with your desired subdomain or leave empty for root
+  name    = "ec2-instance-test.aws.buetow.org" # Replace with your desired subdomain or leave empty for root
   type    = "A"
   ttl     = "300"
   records = [aws_instance.my_instance.public_ip]
