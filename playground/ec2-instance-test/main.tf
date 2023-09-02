@@ -30,7 +30,7 @@ resource "aws_security_group" "allow_ssh" {
 }
 
 resource "aws_instance" "my_instance" {
-  ami             = "ami-0766f68f0b06ab145" # Example AMI ID, make sure to use an appropriate one
+  ami             = "ami-0059170a80e36d30f" # FreeBSD
   instance_type   = "t2.micro"
   key_name        = aws_key_pair.id_rsa_pub.key_name
   security_groups = [aws_security_group.allow_ssh.name]
