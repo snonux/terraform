@@ -1,7 +1,7 @@
 terraform {
   backend "s3" {
     bucket  = "org-buetow-tfstate"
-    key     = "playground/ec2-eks-test/terraform.tfstate"
+    key     = "playground/eks-test/terraform.tfstate"
     region  = "eu-central-1"
     encrypt = true
   }
@@ -52,8 +52,8 @@ resource "aws_subnet" "my_private_subnet" {
 module "eks" {
   source          = "terraform-aws-modules/eks/aws"
   cluster_name    = "my-cluster"
-  cluster_version = "1.21"
-  subnets         = aws_subnet.my_private_subnet[*].id
+  cluster_version = "1.27"
+  subnet_ids         = aws_subnet.my_private_subnet[*].id
   tags = {
     Terraform   = "true"
     Environment = "dev"
