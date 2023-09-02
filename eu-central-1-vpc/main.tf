@@ -51,8 +51,7 @@ resource "aws_subnet" "eks_subnets" {
 }
 
 resource "aws_security_group" "org_buetow_sg" {
-  count       = 3
-  name        = "org-buetow-sg-${count.index}"
+  name        = "org-buetow-sg"
   description = "Security group of the VPS"
   vpc_id      = aws_vpc.org_buetow_vpc.id
 }
