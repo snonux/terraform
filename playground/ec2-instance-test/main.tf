@@ -133,14 +133,15 @@ resource "aws_instance" "my_instance" {
   instance_type = "t2.large"
   key_name      = aws_key_pair.id_rsa_pub.key_name
   subnet_id     = aws_subnet.my_public_subnet.id
+
   vpc_security_group_ids = [
     aws_security_group.allow_ssh.id,
     aws_security_group.allow_http.id,
     aws_security_group.allow_https.id,
     aws_security_group.allow_outbound.id
   ]
-  user_data = data.template_file.user_data.rendered
-
+  user_data  = data.template_file.user_data.rendered
+  depends_on = [aws_efs_file_system.my_efs]
   tags = {
     Name = "my-instance"
   }
