@@ -15,7 +15,7 @@ provider "aws" {
 data "aws_region" "current" {}
 
 resource "aws_key_pair" "id_rsa_pub" {
-  key_name   = "ec2_instance_test_paul@earth"
+  key_name   = "${var.environment}-ec2_instance_test_paul@earth"
   public_key = file("${path.module}/id_rsa.pub")
 }
 
@@ -26,7 +26,7 @@ resource "aws_vpc" "my_vpc" {
   enable_dns_hostnames = true
 
   tags = {
-    Name = "my-vpc"
+    Name = "${var.environment}-my-vpc"
   }
 }
 
@@ -34,7 +34,7 @@ resource "aws_internet_gateway" "my_igw" {
   vpc_id = aws_vpc.my_vpc.id
 
   tags = {
-    Name = "my-igw"
+    Name = "${var.environment}-my-igw"
   }
 }
 
@@ -45,7 +45,7 @@ resource "aws_subnet" "my_public_subnet" {
   map_public_ip_on_launch = true
 
   tags = {
-    Name = "my-subnet"
+    Name = "${var.environment}-my-subnet"
   }
 }
 
@@ -58,7 +58,7 @@ resource "aws_route_table" "my_route_table" {
   }
 
   tags = {
-    Name = "my-route-table"
+    Name = "${var.environment}-my-route-table"
   }
 }
 
@@ -78,6 +78,10 @@ resource "aws_security_group" "allow_ssh" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
+
+  tags = {
+    Name = "${var.environment}-allow-ssh"
+  }
 }
 
 resource "aws_security_group" "allow_http" {
@@ -90,6 +94,10 @@ resource "aws_security_group" "allow_http" {
     to_port     = 80
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  tags = {
+    Name = "${var.environment}-allow_http"
   }
 }
 
@@ -104,6 +112,10 @@ resource "aws_security_group" "allow_https" {
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }
+
+  tags = {
+    Name = "${var.environment}-allow-https"
+  }
 }
 
 resource "aws_security_group" "allow_outbound" {
@@ -116,6 +128,10 @@ resource "aws_security_group" "allow_outbound" {
     to_port     = 0
     protocol    = "-1"          # -1 means all protocols
     cidr_blocks = ["0.0.0.0/0"] # Allows outbound traffic to all IP addresses
+  }
+
+  tags = {
+    Name = "${var.environment}-allow-outnound"
   }
 }
 
@@ -130,7 +146,7 @@ data "template_file" "user_data" {
 
 resource "aws_instance" "my_instance" {
   ami           = data.aws_ami.amazon-linux-2.id
-  instance_type = "t2.large"
+  instance_type = "t2.micro"
   key_name      = aws_key_pair.id_rsa_pub.key_name
   subnet_id     = aws_subnet.my_public_subnet.id
 
@@ -142,8 +158,9 @@ resource "aws_instance" "my_instance" {
   ]
   user_data  = data.template_file.user_data.rendered
   depends_on = [aws_efs_file_system.my_efs]
+
   tags = {
-    Name = "my-instance"
+    Name = "${var.environment}-ec2-instance"
   }
 }
 
@@ -153,7 +170,7 @@ resource "aws_route53_zone" "my_zone" {
 
 resource "aws_route53_record" "my_record" {
   zone_id = aws_route53_zone.my_zone.zone_id
-  name    = "ec2-instance-test.aws.buetow.org" # Replace with your desired subdomain or leave empty for root
+  name    = "${var.environment}-ec2-instance.aws.buetow.org" # Replace with your desired subdomain or leave empty for root
   type    = "A"
   ttl     = "300"
   records = [aws_instance.my_instance.public_ip]

@@ -20,7 +20,7 @@ resource "aws_security_group" "efs_sg" {
     from_port   = 2049 # NFS port
     to_port     = 2049
     protocol    = "tcp"
-    cidr_blocks = ["10.0.1.0/24"] # Replace with the CIDR block of your VPC or EC2 instance subnet
+    cidr_blocks = ["10.0.0.0/16"] # Replace with the CIDR block of your VPC or EC2 instance subnet
   }
 
   egress {
