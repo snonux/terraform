@@ -12,6 +12,8 @@ provider "aws" {
   region = "eu-central-1" # or your preferred AWS region
 }
 
+data "aws_region" "current" {}
+
 resource "aws_key_pair" "id_rsa_pub" {
   key_name   = "ec2_instance_test_paul@earth"
   public_key = file("${path.module}/id_rsa.pub")
@@ -117,6 +119,15 @@ resource "aws_security_group" "allow_outbound" {
   }
 }
 
+data "template_file" "user_data" {
+  template = file("${path.module}/user_data.tpl")
+
+  vars = {
+    region = data.aws_region.current.name
+    efs_id = aws_efs_file_system.my_efs.id
+  }
+}
+
 resource "aws_instance" "my_instance" {
   ami           = data.aws_ami.amazon-linux-2.id
   instance_type = "t2.large"
@@ -128,6 +139,7 @@ resource "aws_instance" "my_instance" {
     aws_security_group.allow_https.id,
     aws_security_group.allow_outbound.id
   ]
+  user_data = data.template_file.user_data.rendered
 
   tags = {
     Name = "my-instance"

@@ -7,10 +7,3 @@ data "aws_ami" "amazon-linux-2" {
     values = ["amzn2-ami-hvm*"]
   }
 }
-
-#data "aws_vpc" "selected" {
-#  filter {
-#    name   = "tag:Name"
-#    values = ["YourVPCName"]  # Replace with your VPC's name
-#  }
-#}
