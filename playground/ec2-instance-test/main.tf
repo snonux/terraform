@@ -29,11 +29,49 @@ resource "aws_security_group" "allow_ssh" {
   }
 }
 
+resource "aws_security_group" "allow_http" {
+  name        = "allow_http"
+  description = "Allow HTTP inbound traffic"
+
+  ingress {
+    from_port   = 80
+    to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+resource "aws_security_group" "allow_https" {
+  name        = "allow_https"
+  description = "Allow HTTPS inbound traffic"
+
+  ingress {
+    from_port   = 443
+    to_port     = 443
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+}
+
+# Get latest Amazon Linux 2 AMI
+data "aws_ami" "amazon-linux-2" {
+  most_recent = true
+  owners      = ["amazon"]
+  filter {
+    name   = "name"
+    values = ["amzn2-ami-hvm*"]
+  }
+}
+
 resource "aws_instance" "my_instance" {
-  ami             = "ami-0059170a80e36d30f" # FreeBSD
-  instance_type   = "t2.micro"
-  key_name        = aws_key_pair.id_rsa_pub.key_name
-  security_groups = [aws_security_group.allow_ssh.name]
+  ami           = data.aws_ami.amazon-linux-2.id
+  instance_type = "t2.micro"
+  key_name      = aws_key_pair.id_rsa_pub.key_name
+  security_groups = [
+    aws_security_group.allow_ssh.name,
+    aws_security_group.allow_http.name,
+    aws_security_group.allow_https.name
+  ]
 
   tags = {
     Name = "my-instance"
