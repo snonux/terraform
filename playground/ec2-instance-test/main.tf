@@ -164,12 +164,12 @@ resource "aws_instance" "my_instance" {
   }
 }
 
-resource "aws_route53_zone" "my_zone" {
+data "aws_route53_zone" "my_zone" {
   name = "aws.buetow.org." # Replace with your domain name
 }
 
 resource "aws_route53_record" "my_record" {
-  zone_id = aws_route53_zone.my_zone.zone_id
+  zone_id = data.aws_route53_zone.my_zone.zone_id
   name    = "${var.environment}-ec2-instance.aws.buetow.org" # Replace with your desired subdomain or leave empty for root
   type    = "A"
   ttl     = "300"
