@@ -66,12 +66,19 @@ resource "aws_route_table_association" "public_route_table_assoc_c" {
   route_table_id = aws_route_table.public_route_table.id
 }
 
-resource "aws_security_group" "nginx_sg" {
+resource "aws_security_group" "web_sg" {
   vpc_id = aws_vpc.my_vpc.id
 
   ingress {
     from_port   = 80
     to_port     = 80
+    protocol    = "tcp"
+    cidr_blocks = ["0.0.0.0/0"]
+  }
+
+  ingress {
+    from_port   = 443
+    to_port     = 443
     protocol    = "tcp"
     cidr_blocks = ["0.0.0.0/0"]
   }

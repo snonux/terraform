@@ -37,33 +37,21 @@ resource "aws_security_group" "alb_sg" {
   }
 }
 
-resource "aws_lb_target_group" "my_tg" {
-  name        = "my-tg"
-  port        = 80
-  protocol    = "HTTP"
-  vpc_id      = aws_vpc.my_vpc.id
-  target_type = "ip"
-
-  health_check {
-    enabled             = true
-    healthy_threshold   = 2
-    unhealthy_threshold = 2
-    interval            = 30
-    path                = "/" # Modify if your app has a specific health check path
-    protocol            = "HTTP"
-    timeout             = 3
-    matcher             = "200-299"
-  }
-}
-
 resource "aws_lb_listener" "my_http_listener" {
   load_balancer_arn = aws_lb.my_alb.arn
   port              = "80"
   protocol          = "HTTP"
 
   default_action {
-    type             = "forward"
-    target_group_arn = aws_lb_target_group.my_tg.arn
+    type = "redirect"
+
+    redirect {
+      protocol    = "HTTPS"
+      port        = "443"
+      status_code = "HTTP_301"
+      path        = "/#{path}"
+      query       = "#{query}"
+    }
   }
 }
 
@@ -71,40 +59,16 @@ data "aws_route53_zone" "my_zone" {
   name = "aws.buetow.org."
 }
 
-resource "aws_route53_record" "my_a_record" {
-  zone_id = data.aws_route53_zone.my_zone.zone_id
-  name    = "nginx.aws.buetow.org."
-  type    = "A"
-
-  alias {
-    name                   = aws_lb.my_alb.dns_name
-    zone_id                = aws_lb.my_alb.zone_id
-    evaluate_target_health = true
-  }
-}
-
-#resource "aws_route53_record" "my_aaaa_record" {
-#  zone_id = data.aws_route53_zone.my_zone.zone_id
-#  name    = "nginx.aws.buetow.org."
-#  type    = "AAAA"
-#
-#  alias {
-#    name                   = aws_lb.my_alb.dns_name
-#    zone_id                = aws_lb.my_alb.zone_id
-#    evaluate_target_health = true
-#  }
-#}
-
-
 resource "aws_lb_listener" "my_https_listener" {
   load_balancer_arn = aws_lb.my_alb.arn
   port              = "443"
   protocol          = "HTTPS"
   ssl_policy        = "ELBSecurityPolicy-2016-08"
-  certificate_arn   = "arn:aws:acm:eu-central-1:634617747016:certificate/4ae442c0-3b56-4e17-9a3f-023faf39d244"
+  # aws.buetow.org and *.aws.buetow.org certificate.
+  certificate_arn = "arn:aws:acm:eu-central-1:634617747016:certificate/4ae442c0-3b56-4e17-9a3f-023faf39d244"
 
   default_action {
     type             = "forward"
-    target_group_arn = aws_lb_target_group.my_tg.arn
+    target_group_arn = aws_lb_target_group.my_nginx_tg.arn
   }
 }
