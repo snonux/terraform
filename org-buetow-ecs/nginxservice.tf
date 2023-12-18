@@ -18,13 +18,34 @@ resource "aws_ecs_task_definition" "nginx_task" {
   memory                   = "512"
   execution_role_arn       = aws_iam_role.ecs_execution_role.arn
 
+  volume {
+    name = "nginx-efs-volume"
+    efs_volume_configuration {
+      file_system_id = data.terraform_remote_state.base.outputs.my_self_hosted_services_efs_id
+      root_directory = "/"
+      #transit_encryption      = "ENABLED"
+      #transit_encryption_port = 2998
+      #authorization_config {
+      #  access_point_id = aws_efs_access_point.wallabag_data_efs_ap.id
+      #  iam             = "ENABLED"
+      #}
+    }
+  }
+
   container_definitions = jsonencode([{
     name  = "nginx",
     image = "nginx:latest",
     portMappings = [{
       containerPort = 80,
       hostPort      = 80
-    }]
+    }],
+    mountPoints = [
+      {
+        sourceVolume  = "nginx-efs-volume"
+        containerPath = "/mnt"
+        readOnly      = false
+      }
+    ]
   }])
 }
 
@@ -33,7 +54,7 @@ resource "aws_ecs_service" "nginx_service" {
   cluster         = aws_ecs_cluster.my_ecs_cluster.id
   task_definition = aws_ecs_task_definition.nginx_task.arn
   launch_type     = "FARGATE"
-  desired_count   = 2
+  desired_count   = 1
 
   load_balancer {
     target_group_arn = aws_lb_target_group.my_nginx_tg.arn
