@@ -23,12 +23,16 @@ data "template_file" "user_data" {
 }
 
 # Get latest Amazon Linux 2 AMI
-data "aws_ami" "amazon-linux-2" {
+data "aws_ami" "amazon_linux" {
   most_recent = true
   owners      = ["amazon"]
   filter {
     name   = "name"
     values = ["amzn2-ami-hvm*"]
+  }
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
   }
 }
 
@@ -38,7 +42,7 @@ resource "aws_key_pair" "id_rsa_pub" {
 }
 
 resource "aws_instance" "my_helper_instance" {
-  ami           = data.aws_ami.amazon-linux-2.id
+  ami           = data.aws_ami.amazon_linux.id
   instance_type = "t2.micro"
   key_name      = aws_key_pair.id_rsa_pub.key_name
   subnet_id     = data.terraform_remote_state.base_remote_state.outputs.my_public_subnet_a_id
