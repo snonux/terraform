@@ -1,7 +1,5 @@
-# Terraform playground
+# Terraform
 
-Maybe one day I can:
+First create VPC, subnets and EFS in org-buetow-production
 
-* Setup NextCloud
-* Setup AnkiDroid
-* Setup Wallabag
+Then, create subdirectories in EFS
