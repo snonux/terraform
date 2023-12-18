@@ -1,4 +1,4 @@
-data "terraform_remote_state" "base_remote_state" {
+data "terraform_remote_state" "base" {
   backend = "s3"
   config = {
     bucket = "org-buetow-tfstate"

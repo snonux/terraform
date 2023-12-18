@@ -45,11 +45,11 @@ resource "aws_ecs_service" "nginx_service" {
 
   network_configuration {
     subnets = [
-      data.terraform_remote_state.base_remote_state.outputs.my_public_subnet_a_id,
-      data.terraform_remote_state.base_remote_state.outputs.my_public_subnet_b_id,
-      data.terraform_remote_state.base_remote_state.outputs.my_public_subnet_c_id,
+      data.terraform_remote_state.base.outputs.my_public_subnet_a_id,
+      data.terraform_remote_state.base.outputs.my_public_subnet_b_id,
+      data.terraform_remote_state.base.outputs.my_public_subnet_c_id,
     ]
-    security_groups  = [data.terraform_remote_state.base_remote_state.outputs.allow_web_sg_id]
+    security_groups  = [data.terraform_remote_state.base.outputs.allow_web_sg_id]
     assign_public_ip = true
   }
 }
@@ -58,7 +58,7 @@ resource "aws_lb_target_group" "my_nginx_tg" {
   name        = "my-nginx-tg"
   port        = 80
   protocol    = "HTTP"
-  vpc_id      = data.terraform_remote_state.base_remote_state.outputs.my_vpc_id
+  vpc_id      = data.terraform_remote_state.base.outputs.my_vpc_id
   target_type = "ip"
 
   health_check {
@@ -142,11 +142,11 @@ resource "aws_ecs_service" "wallabag_service" {
 
   network_configuration {
     subnets = [
-      data.terraform_remote_state.base_remote_state.outputs.my_public_subnet_a_id,
-      data.terraform_remote_state.base_remote_state.outputs.my_public_subnet_b_id,
-      data.terraform_remote_state.base_remote_state.outputs.my_public_subnet_c_id,
+      data.terraform_remote_state.base.outputs.my_public_subnet_a_id,
+      data.terraform_remote_state.base.outputs.my_public_subnet_b_id,
+      data.terraform_remote_state.base.outputs.my_public_subnet_c_id,
     ]
-    security_groups  = [data.terraform_remote_state.base_remote_state.outputs.allow_web_sg_id]
+    security_groups  = [data.terraform_remote_state.base.outputs.allow_web_sg_id]
     assign_public_ip = true
   }
 }
@@ -155,7 +155,7 @@ resource "aws_lb_target_group" "my_wallabag_tg" {
   name        = "my-wallabag-tg"
   port        = 80
   protocol    = "HTTP"
-  vpc_id      = data.terraform_remote_state.base_remote_state.outputs.my_vpc_id
+  vpc_id      = data.terraform_remote_state.base.outputs.my_vpc_id
   target_type = "ip"
 
   health_check {

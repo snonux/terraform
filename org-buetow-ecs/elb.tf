@@ -4,15 +4,15 @@ resource "aws_lb" "my_alb" {
   load_balancer_type = "application"
   security_groups    = [aws_security_group.alb_sg.id]
   subnets = [
-    data.terraform_remote_state.base_remote_state.outputs.my_public_subnet_a_id,
-    data.terraform_remote_state.base_remote_state.outputs.my_public_subnet_b_id,
-    data.terraform_remote_state.base_remote_state.outputs.my_public_subnet_c_id,
+    data.terraform_remote_state.base.outputs.my_public_subnet_a_id,
+    data.terraform_remote_state.base.outputs.my_public_subnet_b_id,
+    data.terraform_remote_state.base.outputs.my_public_subnet_c_id,
   ]
   enable_deletion_protection = false
 }
 
 resource "aws_security_group" "alb_sg" {
-  vpc_id = data.terraform_remote_state.base_remote_state.outputs.my_vpc_id
+  vpc_id = data.terraform_remote_state.base.outputs.my_vpc_id
 
   ingress {
     from_port   = 80
