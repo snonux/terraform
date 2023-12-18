@@ -1,6 +1,10 @@
 # Terraform
 
+## Create base environment
+
 First create VPC, subnets and EFS in `org-buetow-production`
+
+## Use the helper to set up some EFS subdirs
 
 Then, create subdirectories in EFS, using `org-buetow-helper`. E.g., have something like this created:
 
@@ -16,3 +20,7 @@ Then, create subdirectories in EFS, using `org-buetow-helper`. E.g., have someth
 /mnt/efs/ecs/wallabag
 /mnt/efs/ecs/audiobookshelf
 ```
+
+## Now set up Fargate/ECS
+
+In `org-buetow-ecs`
