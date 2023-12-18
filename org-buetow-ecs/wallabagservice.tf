@@ -109,7 +109,7 @@ resource "aws_lb_target_group" "my_wallabag_tg" {
     healthy_threshold   = 2
     unhealthy_threshold = 2
     interval            = 30
-    path                = "/" # Modify if your app has a specific health check path
+    path                = "/login" # Modify if your app has a specific health check path
     protocol            = "HTTP"
     timeout             = 3
     matcher             = "200-299"

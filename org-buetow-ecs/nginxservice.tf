@@ -41,7 +41,7 @@ resource "aws_ecs_service" "nginx_service" {
   cluster         = aws_ecs_cluster.my_ecs_cluster.id
   task_definition = aws_ecs_task_definition.nginx_task.arn
   launch_type     = "FARGATE"
-  desired_count   = 1
+  desired_count   = 10
 
   load_balancer {
     target_group_arn = aws_lb_target_group.my_nginx_tg.arn
