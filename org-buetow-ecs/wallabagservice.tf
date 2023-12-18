@@ -10,42 +10,6 @@ resource "aws_route53_record" "my_a_record_wallabag" {
   }
 }
 
-resource "aws_efs_access_point" "wallabag_data_efs_ap" {
-  file_system_id = data.terraform_remote_state.base.outputs.my_self_hosted_services_efs_id
-
-  posix_user {
-    gid = 1001
-    uid = 1001
-  }
-
-  root_directory {
-    path = "/ecs/wallabag/data"
-    creation_info {
-      owner_gid   = 1001
-      owner_uid   = 1001
-      permissions = "755"
-    }
-  }
-}
-
-resource "aws_efs_access_point" "wallabag_images_efs_ap" {
-  file_system_id = data.terraform_remote_state.base.outputs.my_self_hosted_services_efs_id
-
-  posix_user {
-    gid = 1001
-    uid = 1001
-  }
-
-  root_directory {
-    path = "/ecs/wallabag/images"
-    creation_info {
-      owner_gid   = 1001
-      owner_uid   = 1001
-      permissions = "755"
-    }
-  }
-}
-
 resource "aws_ecs_task_definition" "wallabag_task" {
   family                   = "wallabag"
   network_mode             = "awsvpc"
@@ -53,39 +17,29 @@ resource "aws_ecs_task_definition" "wallabag_task" {
   cpu                      = "256"
   memory                   = "512"
   execution_role_arn       = aws_iam_role.ecs_execution_role.arn
-  task_role_arn            = aws_iam_role.ecs_task_execution_role.arn
+  #task_role_arn            = aws_iam_role.ecs_task_execution_role.arn
 
   volume {
-    name = "wallabag_data_efs_volume"
+    name = "wallabag-db-efs-volume"
     efs_volume_configuration {
       file_system_id = data.terraform_remote_state.base.outputs.my_self_hosted_services_efs_id
-      #root_directory          = "/ecs/wallabag/data"
-      transit_encryption      = "ENABLED"
-      transit_encryption_port = 2998
-      authorization_config {
-        access_point_id = aws_efs_access_point.wallabag_data_efs_ap.id
-        iam             = "ENABLED"
-      }
+      root_directory = "/ecs/wallabag/data/db"
     }
   }
 
   volume {
-    name = "wallabag_images_efs_volume"
+    name = "wallabag-assets-efs-volume"
     efs_volume_configuration {
       file_system_id = data.terraform_remote_state.base.outputs.my_self_hosted_services_efs_id
-      #root_directory          = "/ecs/wallabag/images"
-      transit_encryption      = "ENABLED"
-      transit_encryption_port = 2999
-      authorization_config {
-        access_point_id = aws_efs_access_point.wallabag_images_efs_ap.id
-        iam             = "ENABLED"
-      }
+      root_directory = "/ecs/wallabag/data/assets"
     }
   }
 
   container_definitions = jsonencode([{
     name  = "wallabag",
     image = "wallabag/wallabag",
+    #entryPoint = ["/bin/sh", "-c"],
+    #command    = ["ls", "-ld", "/var/www/wallabag/*"],
     portMappings = [{
       containerPort = 80,
       hostPort      = 80
@@ -98,16 +52,24 @@ resource "aws_ecs_task_definition" "wallabag_task" {
     ],
     mountPoints = [
       {
-        sourceVolume  = "wallabag_data_efs_volume"
-        containerPath = "/var/www/wallabag/data"
+        sourceVolume  = "wallabag-db-efs-volume"
+        containerPath = "/var/www/wallabag/data/db"
         readOnly      = false
       },
       {
-        sourceVolume  = "wallabag_images_efs_volume"
-        containerPath = "/var/www/wallabag/web/assets/images"
+        sourceVolume  = "wallabag-assets-efs-volume"
+        containerPath = "/var/www/wallabag/data/assets"
         readOnly      = false
-      },
-    ]
+      }
+    ],
+    "logConfiguration" : {
+      "logDriver" : "awslogs",
+      "options" : {
+        "awslogs-group" : "/ecs/containers",
+        "awslogs-region" : "eu-central-1",
+        "awslogs-stream-prefix" : "wallabag"
+      }
+    }
   }])
 }
 

@@ -41,7 +41,7 @@ resource "aws_key_pair" "id_rsa_pub" {
   public_key = file("${path.module}/id_rsa.pub")
 }
 
-resource "aws_instance" "my_helper_instance" {
+resource "aws_instance" "my_bastion_instance" {
   ami           = data.aws_ami.amazon_linux.id
   instance_type = "t2.micro"
   key_name      = aws_key_pair.id_rsa_pub.key_name
@@ -55,7 +55,7 @@ resource "aws_instance" "my_helper_instance" {
   user_data = data.template_file.user_data.rendered
 
   tags = {
-    Name = "${var.environment}-my-helper-instance"
+    Name = "${var.environment}-my-bastion-instance"
   }
 }
 
@@ -65,8 +65,8 @@ data "aws_route53_zone" "my_zone" {
 
 resource "aws_route53_record" "my_record" {
   zone_id = data.aws_route53_zone.my_zone.zone_id
-  name    = "helper.aws.buetow.org" # Replace with your desired subdomain or leave empty for root
+  name    = "bastion.aws.buetow.org" # Replace with your desired subdomain or leave empty for root
   type    = "A"
   ttl     = "300"
-  records = [aws_instance.my_helper_instance.public_ip]
+  records = [aws_instance.my_bastion_instance.public_ip]
 }

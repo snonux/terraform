@@ -18,20 +18,6 @@ resource "aws_ecs_task_definition" "nginx_task" {
   memory                   = "512"
   execution_role_arn       = aws_iam_role.ecs_execution_role.arn
 
-  volume {
-    name = "nginx-efs-volume"
-    efs_volume_configuration {
-      file_system_id = data.terraform_remote_state.base.outputs.my_self_hosted_services_efs_id
-      root_directory = "/"
-      #transit_encryption      = "ENABLED"
-      #transit_encryption_port = 2998
-      #authorization_config {
-      #  access_point_id = aws_efs_access_point.wallabag_data_efs_ap.id
-      #  iam             = "ENABLED"
-      #}
-    }
-  }
-
   container_definitions = jsonencode([{
     name  = "nginx",
     image = "nginx:latest",
@@ -39,13 +25,14 @@ resource "aws_ecs_task_definition" "nginx_task" {
       containerPort = 80,
       hostPort      = 80
     }],
-    mountPoints = [
-      {
-        sourceVolume  = "nginx-efs-volume"
-        containerPath = "/mnt"
-        readOnly      = false
+    "logConfiguration" : {
+      "logDriver" : "awslogs",
+      "options" : {
+        "awslogs-group" : "/ecs/containers",
+        "awslogs-region" : "eu-central-1",
+        "awslogs-stream-prefix" : "nginx"
       }
-    ]
+    }
   }])
 }
 
