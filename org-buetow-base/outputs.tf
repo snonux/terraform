@@ -29,3 +29,7 @@ output "allow_web_sg_id" {
 output "allow_outbound_sg_id" {
   value = aws_security_group.allow_outbound.id
 }
+
+output "aws_buetow_org_certificate_arn" {
+  value = "arn:aws:acm:eu-central-1:634617747016:certificate/4ae442c0-3b56-4e17-9a3f-023faf39d244"
+}

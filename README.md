@@ -18,6 +18,8 @@ Then, create subdirectories in EFS, using `org-buetow-helper`. E.g., have someth
 /mnt/efs/ecs/anki-sync-server
 /mnt/efs/ecs/vaultwarden
 /mnt/efs/ecs/wallabag
+/mnt/efs/ecs/wallabag/data
+/mnt/efs/ecs/wallabag/images
 /mnt/efs/ecs/audiobookshelf
 ```
 

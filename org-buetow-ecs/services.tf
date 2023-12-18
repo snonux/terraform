@@ -111,6 +111,34 @@ resource "aws_ecs_task_definition" "wallabag_task" {
   memory                   = "512"
   execution_role_arn       = aws_iam_role.ecs_execution_role.arn
 
+  volume {
+    name = "wallabag_data_efs_volume"
+    efs_volume_configuration {
+      file_system_id          = data.terraform_remote_state.base.outputs.my_self_hosted_services_efs_id
+      root_directory          = "/ecs/wallabag/data"
+      transit_encryption      = "ENABLED"
+      transit_encryption_port = 2998
+      #authorization_config {
+      #  access_point_id = aws_efs_access_point.my_access_point.id
+      #  iam             = "ENABLED"
+      #}
+    }
+  }
+
+  volume {
+    name = "wallabag_images_efs_volume"
+    efs_volume_configuration {
+      file_system_id          = data.terraform_remote_state.base.outputs.my_self_hosted_services_efs_id
+      root_directory          = "/ecs/wallabag/images"
+      transit_encryption      = "ENABLED"
+      transit_encryption_port = 2999
+      #authorization_config {
+      #  access_point_id = aws_efs_access_point.my_access_point.id
+      #  iam             = "ENABLED"
+      #}
+    }
+  }
+
   container_definitions = jsonencode([{
     name  = "wallabag",
     image = "wallabag/wallabag",
@@ -123,6 +151,18 @@ resource "aws_ecs_task_definition" "wallabag_task" {
         name  = "SYMFONY__ENV__DOMAIN_NAME",
         value = "https://wallabag.aws.buetow.org"
       }
+    ],
+    mountPoints = [
+      {
+        sourceVolume  = "wallabag_data_efs_volume"
+        containerPath = "/var/www/wallabag/data"
+        readOnly      = false
+      },
+      {
+        sourceVolume  = "wallabag_images_efs_volume"
+        containerPath = "/var/www/wallabag/web/assets/images"
+        readOnly      = false
+      },
     ]
   }])
 }
