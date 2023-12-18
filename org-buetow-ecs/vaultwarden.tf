@@ -1,6 +1,6 @@
-resource "aws_route53_record" "my_a_record" {
+resource "aws_route53_record" "my_a_record_vaultwarden" {
   zone_id = data.aws_route53_zone.my_zone.zone_id
-  name    = "nginx.aws.buetow.org."
+  name    = "vaultwarden.aws.buetow.org."
   type    = "A"
 
   alias {
@@ -10,43 +10,58 @@ resource "aws_route53_record" "my_a_record" {
   }
 }
 
-resource "aws_ecs_task_definition" "nginx_task" {
-  family                   = "nginx"
+resource "aws_ecs_task_definition" "vaultwarden_task" {
+  family                   = "vaultwarden"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
   cpu                      = "256"
   memory                   = "512"
   execution_role_arn       = aws_iam_role.ecs_execution_role.arn
 
+  volume {
+    name = "vaultwarden-data-efs-volume"
+    efs_volume_configuration {
+      file_system_id = data.terraform_remote_state.base.outputs.my_self_hosted_services_efs_id
+      root_directory = "/ecs/vaultwarden/data"
+    }
+  }
+
   container_definitions = jsonencode([{
-    name  = "nginx",
-    image = "nginx:latest",
+    name  = "vaultwarden",
+    image = "vaultwarden/server:latest",
     portMappings = [{
       containerPort = 80,
       hostPort      = 80
     }],
+    mountPoints = [
+      {
+        sourceVolume  = "vaultwarden-data-efs-volume"
+        containerPath = "/data"
+        readOnly      = false
+      }
+    ],
     "logConfiguration" : {
       "logDriver" : "awslogs",
       "options" : {
         "awslogs-group" : "/ecs/containers",
         "awslogs-region" : "eu-central-1",
-        "awslogs-stream-prefix" : "nginx"
+        "awslogs-stream-prefix" : "vaultwarden"
       }
     }
   }])
 }
 
-resource "aws_ecs_service" "nginx_service" {
-  name            = "nginx"
+resource "aws_ecs_service" "vaultwarden_service" {
+  name            = "vaultwarden"
   cluster         = aws_ecs_cluster.my_ecs_cluster.id
-  task_definition = aws_ecs_task_definition.nginx_task.arn
+  task_definition = aws_ecs_task_definition.vaultwarden_task.arn
   launch_type     = "FARGATE"
-  desired_count   = 10
+  desired_count   = 0
 
   load_balancer {
-    target_group_arn = aws_lb_target_group.my_nginx_tg.arn
-    container_name   = "nginx" # Must match the name in your container definition
-    container_port   = 80      # The port your container is listening on
+    target_group_arn = aws_lb_target_group.my_vaultwarden_tg.arn
+    container_name   = "vaultwarden" # Must match the name in your container definition
+    container_port   = 80            # The port your container is listening on
   }
 
   network_configuration {
@@ -60,8 +75,8 @@ resource "aws_ecs_service" "nginx_service" {
   }
 }
 
-resource "aws_lb_target_group" "my_nginx_tg" {
-  name        = "my-nginx-tg"
+resource "aws_lb_target_group" "my_vaultwarden_tg" {
+  name        = "my-vaultwarden-tg"
   port        = 80
   protocol    = "HTTP"
   vpc_id      = data.terraform_remote_state.base.outputs.my_vpc_id
@@ -72,25 +87,25 @@ resource "aws_lb_target_group" "my_nginx_tg" {
     healthy_threshold   = 2
     unhealthy_threshold = 2
     interval            = 30
-    path                = "/" # Modify if your app has a specific health check path
+    path                = "/"
     protocol            = "HTTP"
     timeout             = 3
     matcher             = "200-299"
   }
 }
 
-resource "aws_lb_listener_rule" "my_nginx_https_listener_rule" {
+resource "aws_lb_listener_rule" "my_vaultwarden_https_listener_rule" {
   listener_arn = aws_lb_listener.my_https_listener.arn
-  priority     = 100
+  priority     = 103
 
   action {
     type             = "forward"
-    target_group_arn = aws_lb_target_group.my_nginx_tg.arn
+    target_group_arn = aws_lb_target_group.my_vaultwarden_tg.arn
   }
 
   condition {
     host_header {
-      values = ["nginx.aws.buetow.org"]
+      values = ["vaultwarden.aws.buetow.org"]
     }
   }
 }

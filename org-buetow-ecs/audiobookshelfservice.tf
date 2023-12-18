@@ -91,7 +91,7 @@ resource "aws_ecs_task_definition" "audiobookshelf_task" {
 }
 
 resource "aws_ecs_service" "audiobookshelf_service" {
-  name            = "audiobookshelf-service"
+  name            = "audiobookshelf"
   cluster         = aws_ecs_cluster.my_ecs_cluster.id
   task_definition = aws_ecs_task_definition.audiobookshelf_task.arn
   launch_type     = "FARGATE"
