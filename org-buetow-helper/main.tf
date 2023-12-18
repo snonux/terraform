@@ -13,15 +13,6 @@ provider "aws" {
 
 data "aws_region" "current" {}
 
-data "terraform_remote_state" "base_remote_state" {
-  backend = "s3"
-  config = {
-    bucket = "org-buetow-tfstate"
-    key    = "org-buetow-base/terraform.tfstate"
-    region = "eu-central-1"
-  }
-}
-
 data "template_file" "user_data" {
   template = file("${path.module}/user_data.tpl")
 
