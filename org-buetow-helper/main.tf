@@ -55,9 +55,9 @@ resource "aws_instance" "bastion" {
   user_data = data.template_file.user_data.rendered
 }
 
-resource "aws_route53_record" "bastion_aws_buetow_org" {
-  zone_id = data.terraform_remote_state.base.outputs.aws_buetow_org_zone_id
-  name    = "bastion.aws.buetow.org"
+resource "aws_route53_record" "bastion_buetow_cloud" {
+  zone_id = data.terraform_remote_state.base.outputs.buetow_cloud_zone_id
+  name    = "bastion.buetow.cloud"
   type    = "A"
   ttl     = "300"
   records = [aws_instance.bastion.public_ip]

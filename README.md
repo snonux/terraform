@@ -5,7 +5,6 @@
 * Nextcloud and Bastion: Auto re-create in different AZ on failure.
 * Backup EFS, don't let `terraform destroy` erease all my data!
 * Input variables, for configuring different service hosts.
-* Maybe register `buetow.rocks` domain (or keep using `aws.buetow.org`)
 
 ## Create base environment
 

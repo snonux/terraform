@@ -1,6 +1,6 @@
 resource "aws_route53_record" "a_record" {
-  zone_id = data.aws_route53_zone.zone.zone_id
-  name    = "nextcloud.aws.buetow.org."
+  zone_id = data.terraform_remote_state.base.outputs.buetow_cloud_zone_id
+  name    = "nextcloud.buetow.cloud."
   type    = "A"
 
   alias {
@@ -40,7 +40,7 @@ resource "aws_lb_listener_rule" "nextcloud_https_listener_rule" {
 
   condition {
     host_header {
-      values = ["nextcloud.aws.buetow.org"]
+      values = ["nextcloud.buetow.cloud"]
     }
   }
 }

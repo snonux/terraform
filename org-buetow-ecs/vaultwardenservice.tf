@@ -1,6 +1,6 @@
 resource "aws_route53_record" "a_record_vaultwarden" {
-  zone_id = data.terraform_remote_state.base.outputs.aws_buetow_org_zone_id
-  name    = "vaultwarden.aws.buetow.org."
+  zone_id = data.terraform_remote_state.base.outputs.buetow_cloud_zone_id
+  name    = "vaultwarden.buetow.cloud."
   type    = "A"
 
   alias {
@@ -105,7 +105,7 @@ resource "aws_lb_listener_rule" "vaultwarden_https_listener_rule" {
 
   condition {
     host_header {
-      values = ["vaultwarden.aws.buetow.org"]
+      values = ["vaultwarden.buetow.cloud"]
     }
   }
 }

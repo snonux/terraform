@@ -1,6 +1,6 @@
 resource "aws_route53_record" "a_record_audiobookshelf" {
-  zone_id = data.terraform_remote_state.base.outputs.aws_buetow_org_zone_id
-  name    = "audiobookshelf.aws.buetow.org."
+  zone_id = data.terraform_remote_state.base.outputs.buetow_cloud_zone_id
+  name    = "audiobookshelf.buetow.cloud."
   type    = "A"
 
   alias {
@@ -144,7 +144,7 @@ resource "aws_lb_listener_rule" "audiobookshelf_https_listener_rule" {
 
   condition {
     host_header {
-      values = ["audiobookshelf.aws.buetow.org"]
+      values = ["audiobookshelf.buetow.cloud"]
     }
   }
 }

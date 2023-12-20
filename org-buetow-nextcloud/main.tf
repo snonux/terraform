@@ -56,8 +56,8 @@ resource "aws_instance" "nextcloud" {
 }
 
 resource "aws_route53_record" "nextcloud_ec2_aws_buetow_org" {
-  zone_id = data.aws_route53_zone.zone.zone_id
-  name    = "nextcloud-ec2.aws.buetow.org" # Replace with your desired subdomain or leave empty for root
+  zone_id = data.terraform_remote_state.base.outputs.buetow_cloud_zone_id
+  name    = "nextcloud-ec2.buetow.cloud"
   type    = "A"
   ttl     = "300"
   records = [aws_instance.nextcloud.public_ip]

@@ -1,6 +1,6 @@
 resource "aws_route53_record" "a_record" {
-  zone_id = data.terraform_remote_state.base.outputs.aws_buetow_org_zone_id
-  name    = "nginx.aws.buetow.org."
+  zone_id = data.terraform_remote_state.base.outputs.buetow_cloud_zone_id
+  name    = "nginx.buetow.cloud."
   type    = "A"
 
   alias {
@@ -90,7 +90,7 @@ resource "aws_lb_listener_rule" "nginx_https_listener_rule" {
 
   condition {
     host_header {
-      values = ["nginx.aws.buetow.org"]
+      values = ["nginx.buetow.cloud"]
     }
   }
 }

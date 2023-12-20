@@ -59,7 +59,7 @@ resource "aws_lb_listener" "https_listener" {
   port              = "443"
   protocol          = "HTTPS"
   ssl_policy        = "ELBSecurityPolicy-2016-08"
-  certificate_arn   = data.terraform_remote_state.base.outputs.aws_buetow_org_certificate_arn
+  certificate_arn   = data.terraform_remote_state.base.outputs.buetow_cloud_certificate_arn
 
   default_action {
     type             = "forward"

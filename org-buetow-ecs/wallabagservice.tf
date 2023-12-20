@@ -1,6 +1,6 @@
 resource "aws_route53_record" "a_record_wallabag" {
-  zone_id = data.terraform_remote_state.base.outputs.aws_buetow_org_zone_id
-  name    = "wallabag.aws.buetow.org."
+  zone_id = data.terraform_remote_state.base.outputs.buetow_cloud_zone_id
+  name    = "wallabag.buetow.cloud."
   type    = "A"
 
   alias {
@@ -46,7 +46,7 @@ resource "aws_ecs_task_definition" "wallabag" {
     environment = [
       {
         name  = "SYMFONY__ENV__DOMAIN_NAME",
-        value = "https://wallabag.aws.buetow.org"
+        value = "https://wallabag.buetow.cloud"
       }
     ],
     mountPoints = [
@@ -126,7 +126,7 @@ resource "aws_lb_listener_rule" "wallabag_https_listener_rule" {
 
   condition {
     host_header {
-      values = ["wallabag.aws.buetow.org"]
+      values = ["wallabag.buetow.cloud"]
     }
   }
 }
