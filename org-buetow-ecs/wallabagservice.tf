@@ -78,7 +78,7 @@ resource "aws_ecs_service" "wallabag_service" {
   cluster         = aws_ecs_cluster.my_ecs_cluster.id
   task_definition = aws_ecs_task_definition.wallabag_task.arn
   launch_type     = "FARGATE"
-  desired_count   = 1
+  desired_count   = 0
 
   load_balancer {
     target_group_arn = aws_lb_target_group.my_wallabag_tg.arn
