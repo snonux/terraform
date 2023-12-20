@@ -18,7 +18,7 @@ data "template_file" "user_data" {
 
   vars = {
     region = data.aws_region.current.name
-    efs_id = data.terraform_remote_state.base_remote_state.outputs.my_self_hosted_services_efs_id
+    efs_id = data.terraform_remote_state.base.outputs.my_self_hosted_services_efs_id
   }
 }
 
@@ -45,12 +45,12 @@ resource "aws_instance" "my_nextcloud_instance" {
   ami           = data.aws_ami.amazon_linux.id
   instance_type = "t2.medium"
   key_name      = aws_key_pair.id_rsa_pub.key_name
-  subnet_id     = data.terraform_remote_state.base_remote_state.outputs.my_public_subnet_a_id
+  subnet_id     = data.terraform_remote_state.base.outputs.my_public_subnet_a_id
 
   vpc_security_group_ids = [
-    data.terraform_remote_state.base_remote_state.outputs.allow_ssh_sg_id,
-    data.terraform_remote_state.base_remote_state.outputs.allow_web_sg_id,
-    data.terraform_remote_state.base_remote_state.outputs.allow_outbound_sg_id,
+    data.terraform_remote_state.base.outputs.allow_ssh_sg_id,
+    data.terraform_remote_state.base.outputs.allow_web_sg_id,
+    data.terraform_remote_state.base.outputs.allow_outbound_sg_id,
   ]
   user_data = data.template_file.user_data.rendered
 
@@ -59,13 +59,9 @@ resource "aws_instance" "my_nextcloud_instance" {
   }
 }
 
-data "aws_route53_zone" "my_zone" {
-  name = "aws.buetow.org." # Replace with your domain name
-}
-
 resource "aws_route53_record" "my_record" {
   zone_id = data.aws_route53_zone.my_zone.zone_id
-  name    = "nextcloud.aws.buetow.org" # Replace with your desired subdomain or leave empty for root
+  name    = "nextcloud-ec2.aws.buetow.org" # Replace with your desired subdomain or leave empty for root
   type    = "A"
   ttl     = "300"
   records = [aws_instance.my_nextcloud_instance.public_ip]
