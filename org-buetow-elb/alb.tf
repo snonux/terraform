@@ -54,10 +54,6 @@ resource "aws_lb_listener" "my_http_listener" {
   }
 }
 
-data "aws_route53_zone" "my_zone" {
-  name = "aws.buetow.org."
-}
-
 resource "aws_lb_listener" "my_https_listener" {
   load_balancer_arn = aws_lb.my_alb.arn
   port              = "443"
@@ -67,6 +63,15 @@ resource "aws_lb_listener" "my_https_listener" {
 
   default_action {
     type             = "forward"
-    target_group_arn = aws_lb_target_group.my_nginx_tg.arn
+    target_group_arn = aws_lb_target_group.default_tg.arn
   }
 }
+
+resource "aws_lb_target_group" "default_tg" {
+  name        = "my-default-tg"
+  port        = 80
+  protocol    = "HTTP"
+  vpc_id      = data.terraform_remote_state.base.outputs.my_vpc_id
+  target_type = "ip"
+}
+

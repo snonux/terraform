@@ -4,8 +4,8 @@ resource "aws_route53_record" "my_a_record_wallabag" {
   type    = "A"
 
   alias {
-    name                   = aws_lb.my_alb.dns_name
-    zone_id                = aws_lb.my_alb.zone_id
+    name                   = data.terraform_remote_state.elb.outputs.alb_dns_name
+    zone_id                = data.terraform_remote_state.elb.outputs.alb_zone_id
     evaluate_target_health = true
   }
 }
@@ -117,7 +117,7 @@ resource "aws_lb_target_group" "my_wallabag_tg" {
 }
 
 resource "aws_lb_listener_rule" "my_wallabag_https_listener_rule" {
-  listener_arn = aws_lb_listener.my_https_listener.arn
+  listener_arn = data.terraform_remote_state.elb.outputs.alb_https_listener_arn
   priority     = 101
 
   action {

@@ -23,6 +23,10 @@ Then, create subdirectories in EFS, using `org-buetow-helper`. E.g., have someth
 /mnt/efs/ecs/audiobookshelf
 ```
 
+## Set up Application loadbalancer
+
+In `org-buetow-elb`
+
 ## Now set up Fargate/ECS
 
 In `org-buetow-ecs`
