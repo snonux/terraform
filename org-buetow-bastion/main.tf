@@ -1,7 +1,7 @@
 terraform {
   backend "s3" {
     bucket  = "org-buetow-tfstate"
-    key     = "org-buetow-helper/terraform.tfstate"
+    key     = "org-buetow-bastion/terraform.tfstate"
     region  = "eu-central-1"
     encrypt = true
   }
