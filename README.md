@@ -13,12 +13,12 @@
 
 First create VPC, subnets and EFS in `org-buetow-base`
 
-## Use the helper to set up some EFS subdirs
+## Use the bastion to set up some EFS subdirs
 
-Then, create subdirectories in EFS, using `org-buetow-helper`. E.g., have something like this created:
+Then, create subdirectories in EFS, using `org-buetow-bastion`. E.g., have something like this created:
 
 ```shell
-[paul@earth]~/git/terraform/org-buetow-helper% ssh ec2-user@helper.aws.buetow.org find /mnt
+[paul@earth]~/git/terraform/org-buetow-bastion% ssh ec2-user@bastion.aws.buetow.org find /mnt
 /mnt
 /mnt/efs
 /mnt/efs/ec2
