@@ -41,7 +41,7 @@ resource "aws_key_pair" "id_rsa_pub" {
   public_key = file("${path.module}/id_rsa.pub")
 }
 
-resource "aws_instance" "my_bastion_instance" {
+resource "aws_instance" "bastion_instance" {
   ami           = data.aws_ami.amazon_linux.id
   instance_type = "t2.micro"
   key_name      = aws_key_pair.id_rsa_pub.key_name
@@ -59,14 +59,14 @@ resource "aws_instance" "my_bastion_instance" {
   }
 }
 
-data "aws_route53_zone" "my_zone" {
+data "aws_route53_zone" "zone" {
   name = "aws.buetow.org." # Replace with your domain name
 }
 
-resource "aws_route53_record" "my_record" {
-  zone_id = data.aws_route53_zone.my_zone.zone_id
+resource "aws_route53_record" "record" {
+  zone_id = data.aws_route53_zone.zone.zone_id
   name    = "bastion.aws.buetow.org" # Replace with your desired subdomain or leave empty for root
   type    = "A"
   ttl     = "300"
-  records = [aws_instance.my_bastion_instance.public_ip]
+  records = [aws_instance.bastion_instance.public_ip]
 }
