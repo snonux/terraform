@@ -1,8 +1,15 @@
 # Terraform
 
+## TODO's
+
+* Nextcloud and Bastion: Auto re-create in different AZ on failure.
+* Backup EFS, don't let `terraform destroy` erease all my data!
+* Input variables, for configuring different service hosts.
+* Maybe register `buetow.cloud` domain (or keep using `aws.buetow.org`)
+
 ## Create base environment
 
-First create VPC, subnets and EFS in `org-buetow-production`
+First create VPC, subnets and EFS in `org-buetow-base`
 
 ## Use the helper to set up some EFS subdirs
 
@@ -30,3 +37,7 @@ In `org-buetow-elb`
 ## Now set up Fargate/ECS
 
 In `org-buetow-ecs`
+
+## Nextcloud
+
+In `org-buetow-nextcloud`

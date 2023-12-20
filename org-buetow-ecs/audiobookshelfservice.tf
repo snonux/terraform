@@ -1,5 +1,5 @@
-resource "aws_route53_record" "my_a_record_audiobookshelf" {
-  zone_id = data.aws_route53_zone.my_zone.zone_id
+resource "aws_route53_record" "a_record_audiobookshelf" {
+  zone_id = data.terraform_remote_state.base.outputs.aws_buetow_org_zone_id
   name    = "audiobookshelf.aws.buetow.org."
   type    = "A"
 
@@ -21,7 +21,7 @@ resource "aws_ecs_task_definition" "audiobookshelf_task" {
   volume {
     name = "audiobookshelf-config-efs-volume"
     efs_volume_configuration {
-      file_system_id = data.terraform_remote_state.base.outputs.my_self_hosted_services_efs_id
+      file_system_id = data.terraform_remote_state.base.outputs.self_hosted_services_efs_id
       root_directory = "/ecs/audiobookshelf/config"
     }
   }
@@ -29,7 +29,7 @@ resource "aws_ecs_task_definition" "audiobookshelf_task" {
   volume {
     name = "audiobookshelf-metadata-efs-volume"
     efs_volume_configuration {
-      file_system_id = data.terraform_remote_state.base.outputs.my_self_hosted_services_efs_id
+      file_system_id = data.terraform_remote_state.base.outputs.self_hosted_services_efs_id
       root_directory = "/ecs/audiobookshelf/metadata"
     }
   }
@@ -37,7 +37,7 @@ resource "aws_ecs_task_definition" "audiobookshelf_task" {
   volume {
     name = "audiobookshelf-audiobooks-efs-volume"
     efs_volume_configuration {
-      file_system_id = data.terraform_remote_state.base.outputs.my_self_hosted_services_efs_id
+      file_system_id = data.terraform_remote_state.base.outputs.self_hosted_services_efs_id
       root_directory = "/ecs/audiobookshelf/audiobooks"
     }
   }
@@ -45,7 +45,7 @@ resource "aws_ecs_task_definition" "audiobookshelf_task" {
   volume {
     name = "audiobookshelf-podcasts-efs-volume"
     efs_volume_configuration {
-      file_system_id = data.terraform_remote_state.base.outputs.my_self_hosted_services_efs_id
+      file_system_id = data.terraform_remote_state.base.outputs.self_hosted_services_efs_id
       root_directory = "/ecs/audiobookshelf/podcasts"
     }
   }
@@ -92,33 +92,33 @@ resource "aws_ecs_task_definition" "audiobookshelf_task" {
 
 resource "aws_ecs_service" "audiobookshelf_service" {
   name            = "audiobookshelf"
-  cluster         = aws_ecs_cluster.my_ecs_cluster.id
+  cluster         = aws_ecs_cluster.ecs_cluster.id
   task_definition = aws_ecs_task_definition.audiobookshelf_task.arn
   launch_type     = "FARGATE"
   desired_count   = 1
 
   load_balancer {
-    target_group_arn = aws_lb_target_group.my_audiobookshelf_tg.arn
+    target_group_arn = aws_lb_target_group.audiobookshelf_tg.arn
     container_name   = "audiobookshelf" # Must match the name in your container definition
     container_port   = 80               # The port your container is listening on
   }
 
   network_configuration {
     subnets = [
-      data.terraform_remote_state.base.outputs.my_public_subnet_a_id,
-      data.terraform_remote_state.base.outputs.my_public_subnet_b_id,
-      data.terraform_remote_state.base.outputs.my_public_subnet_c_id,
+      data.terraform_remote_state.base.outputs.public_subnet_a_id,
+      data.terraform_remote_state.base.outputs.public_subnet_b_id,
+      data.terraform_remote_state.base.outputs.public_subnet_c_id,
     ]
     security_groups  = [data.terraform_remote_state.base.outputs.allow_web_sg_id]
     assign_public_ip = true
   }
 }
 
-resource "aws_lb_target_group" "my_audiobookshelf_tg" {
-  name        = "my-audiobookshelf-tg"
+resource "aws_lb_target_group" "audiobookshelf_tg" {
+  name        = "audiobookshelf-tg"
   port        = 80
   protocol    = "HTTP"
-  vpc_id      = data.terraform_remote_state.base.outputs.my_vpc_id
+  vpc_id      = data.terraform_remote_state.base.outputs.vpc_id
   target_type = "ip"
 
   health_check {
@@ -133,13 +133,13 @@ resource "aws_lb_target_group" "my_audiobookshelf_tg" {
   }
 }
 
-resource "aws_lb_listener_rule" "my_audiobookshelf_https_listener_rule" {
+resource "aws_lb_listener_rule" "audiobookshelf_https_listener_rule" {
   listener_arn = data.terraform_remote_state.elb.outputs.alb_https_listener_arn
   priority     = 102
 
   action {
     type             = "forward"
-    target_group_arn = aws_lb_target_group.my_audiobookshelf_tg.arn
+    target_group_arn = aws_lb_target_group.audiobookshelf_tg.arn
   }
 
   condition {

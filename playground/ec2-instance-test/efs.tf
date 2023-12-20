@@ -1,20 +1,16 @@
-resource "aws_efs_file_system" "my_efs" {
-  creation_token = "my-efs"
+resource "aws_efs_file_system" "efs" {
+  creation_token = "efs"
   encrypted      = true
-
-  tags = {
-    Name = "MyEFS"
-  }
 }
 
 resource "aws_efs_mount_target" "efs_mt" {
-  file_system_id  = aws_efs_file_system.my_efs.id
-  subnet_id       = aws_subnet.my_public_subnet.id # Replace with your subnet ID
+  file_system_id  = aws_efs_file_system.efs.id
+  subnet_id       = aws_subnet.public_subnet.id # Replace with your subnet ID
   security_groups = [aws_security_group.efs_sg.id] # Replace with your security group ID
 }
 
 resource "aws_security_group" "efs_sg" {
-  vpc_id = aws_vpc.my_vpc.id # Replace with your VPC ID
+  vpc_id = aws_vpc.vpc.id # Replace with your VPC ID
 
   ingress {
     from_port   = 2049 # NFS port
@@ -28,9 +24,5 @@ resource "aws_security_group" "efs_sg" {
     to_port     = 0
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
-  }
-
-  tags = {
-    Name = "efs-sg"
   }
 }

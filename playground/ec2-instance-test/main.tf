@@ -24,15 +24,15 @@ data "template_file" "user_data" {
 
   vars = {
     region = data.aws_region.current.name
-    efs_id = aws_efs_file_system.my_efs.id
+    efs_id = aws_efs_file_system.efs.id
   }
 }
 
-resource "aws_instance" "my_instance" {
+resource "aws_instance" "instance" {
   ami           = data.aws_ami.amazon-linux-2.id
   instance_type = "t2.micro"
   key_name      = aws_key_pair.id_rsa_pub.key_name
-  subnet_id     = aws_subnet.my_public_subnet.id
+  subnet_id     = aws_subnet.public_subnet.id
 
   vpc_security_group_ids = [
     aws_security_group.allow_ssh.id,
@@ -41,21 +41,17 @@ resource "aws_instance" "my_instance" {
     aws_security_group.allow_outbound.id
   ]
   user_data  = data.template_file.user_data.rendered
-  depends_on = [aws_efs_file_system.my_efs]
-
-  tags = {
-    Name = "${var.environment}-ec2-instance"
-  }
+  depends_on = [aws_efs_file_system.efs]
 }
 
-data "aws_route53_zone" "my_zone" {
+data "aws_route53_zone" "zone" {
   name = "aws.buetow.org." # Replace with your domain name
 }
 
-resource "aws_route53_record" "my_record" {
-  zone_id = data.aws_route53_zone.my_zone.zone_id
+resource "aws_route53_record" "record" {
+  zone_id = data.aws_route53_zone.zone.zone_id
   name    = "${var.environment}-ec2-instance.aws.buetow.org" # Replace with your desired subdomain or leave empty for root
   type    = "A"
   ttl     = "300"
-  records = [aws_instance.my_instance.public_ip]
+  records = [aws_instance.instance.public_ip]
 }

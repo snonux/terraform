@@ -1,5 +1,5 @@
-resource "aws_route53_record" "my_a_record" {
-  zone_id = data.aws_route53_zone.my_zone.zone_id
+resource "aws_route53_record" "a_record" {
+  zone_id = data.aws_route53_zone.zone.zone_id
   name    = "nextcloud.aws.buetow.org."
   type    = "A"
 
@@ -14,7 +14,7 @@ resource "aws_lb_target_group" "nextcloud_tg" {
   name        = "nextcloud-tg"
   port        = 80
   protocol    = "HTTP"
-  vpc_id      = data.terraform_remote_state.base.outputs.my_vpc_id
+  vpc_id      = data.terraform_remote_state.base.outputs.vpc_id
   target_type = "ip"
 
   health_check {
