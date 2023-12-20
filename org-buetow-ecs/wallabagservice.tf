@@ -10,14 +10,13 @@ resource "aws_route53_record" "a_record_wallabag" {
   }
 }
 
-resource "aws_ecs_task_definition" "wallabag_task" {
+resource "aws_ecs_task_definition" "wallabag" {
   family                   = "wallabag"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
   cpu                      = "256"
   memory                   = "512"
   execution_role_arn       = aws_iam_role.ecs_execution_role.arn
-  #task_role_arn            = aws_iam_role.ecs_task_execution_role.arn
 
   volume {
     name = "wallabag-db-efs-volume"
@@ -73,10 +72,10 @@ resource "aws_ecs_task_definition" "wallabag_task" {
   }])
 }
 
-resource "aws_ecs_service" "wallabag_service" {
+resource "aws_ecs_service" "wallabag" {
   name            = "wallabag"
   cluster         = aws_ecs_cluster.ecs_cluster.id
-  task_definition = aws_ecs_task_definition.wallabag_task.arn
+  task_definition = aws_ecs_task_definition.wallabag.arn
   launch_type     = "FARGATE"
   desired_count   = 0
 

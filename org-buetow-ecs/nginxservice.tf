@@ -10,7 +10,7 @@ resource "aws_route53_record" "a_record" {
   }
 }
 
-resource "aws_ecs_task_definition" "nginx_task" {
+resource "aws_ecs_task_definition" "nginx" {
   family                   = "nginx"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
@@ -36,10 +36,10 @@ resource "aws_ecs_task_definition" "nginx_task" {
   }])
 }
 
-resource "aws_ecs_service" "nginx_service" {
+resource "aws_ecs_service" "nginx" {
   name            = "nginx"
   cluster         = aws_ecs_cluster.ecs_cluster.id
-  task_definition = aws_ecs_task_definition.nginx_task.arn
+  task_definition = aws_ecs_task_definition.nginx.arn
   launch_type     = "FARGATE"
   desired_count   = 10
 
