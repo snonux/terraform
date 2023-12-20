@@ -5,6 +5,8 @@
 * Nextcloud and Bastion: Auto re-create in different AZ on failure.
 * Backup EFS, don't let `terraform destroy` erease all my data!
 * Input variables, for configuring different service hosts.
+* Enable IPv6
+* Use Basion host to connect to other EC2 instances (internal DNS?)
 
 ## Create base environment
 
