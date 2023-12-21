@@ -16,10 +16,6 @@ resource "aws_key_pair" "id_rsa_pub" {
   public_key = file("${path.module}/id_rsa.pub")
 }
 
-resource "aws_eip" "bastion" {
-  instance = aws_instance.bastion.id
-}
-
 resource "aws_instance" "bastion" {
   ami           = "ami-024f768332f080c5e" # Amazon Linux 2023
   instance_type = "t2.micro"
@@ -34,13 +30,9 @@ resource "aws_instance" "bastion" {
   user_data = data.template_file.user_data.rendered
 }
 
-#resource "aws_route53_record" "bastion_ec2_buetow_cloud" {
-#  zone_id = data.terraform_remote_state.base.outputs.buetow_cloud_zone_id
-#  name    = "bastion-ec2.buetow.cloud"
-#  type    = "A"
-#  ttl     = "300"
-#  records = [aws_instance.bastion.public_ip]
-#}
+resource "aws_eip" "bastion" {
+  instance = aws_instance.bastion.id
+}
 
 resource "aws_route53_record" "bastion_buetow_cloud" {
   zone_id = data.terraform_remote_state.base.outputs.buetow_cloud_zone_id
@@ -49,3 +41,12 @@ resource "aws_route53_record" "bastion_buetow_cloud" {
   ttl     = "300"
   records = [aws_eip.bastion.public_ip]
 }
+
+#resource "aws_route53_record" "bastion_ec2_buetow_cloud" {
+#  zone_id = data.terraform_remote_state.base.outputs.buetow_cloud_zone_id
+#  name    = "bastion-ec2.buetow.cloud"
+#  type    = "A"
+#  ttl     = "300"
+#  records = [aws_instance.bastion.public_ip]
+#}
+
