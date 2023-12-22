@@ -17,7 +17,7 @@ resource "aws_key_pair" "id_rsa_pub" {
 }
 
 resource "aws_instance" "nextcloud" {
-  ami           = "ami-024f768332f080c5e" # Amazon Linux 2023
+  ami = "ami-024f768332f080c5e" # Amazon Linux 2023
 
   instance_type = "t2.medium"
   key_name      = aws_key_pair.id_rsa_pub.key_name
@@ -29,6 +29,10 @@ resource "aws_instance" "nextcloud" {
     data.terraform_remote_state.base.outputs.allow_outbound_sg_id,
   ]
   user_data = data.template_file.user_data.rendered
+
+  tags = {
+    Name = "nextcloud" # Replace with your desired name
+  }
 }
 
 resource "aws_route53_record" "nextcloud_ec2_aws_buetow_org" {

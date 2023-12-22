@@ -28,6 +28,10 @@ resource "aws_instance" "bastion" {
     data.terraform_remote_state.base.outputs.allow_outbound_sg_id,
   ]
   user_data = data.template_file.user_data.rendered
+
+  tags = {
+    Name = "bastion"
+  }
 }
 
 resource "aws_eip" "bastion" {
