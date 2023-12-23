@@ -34,7 +34,7 @@ resource "aws_ecs_task_definition" "vault" {
     name = "vault-data-efs-volume"
     efs_volume_configuration {
       file_system_id = data.terraform_remote_state.base.outputs.self_hosted_services_efs_id
-      root_directory = "/ecs/vaultwarden/data"
+      root_directory = "/ecs/vault/data"
     }
   }
 
