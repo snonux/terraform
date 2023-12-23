@@ -58,7 +58,7 @@ resource "aws_ecs_task_definition" "wallabag" {
     environment = [
       {
         name  = "SYMFONY__ENV__DOMAIN_NAME",
-        value = "https://wallabag.buetow.cloud"
+        value = "https://bag.buetow.cloud"
       }
     ],
     mountPoints = [
