@@ -1,7 +1,19 @@
-resource "aws_route53_record" "a_record" {
+resource "aws_route53_record" "a_record_nginx" {
   zone_id = data.terraform_remote_state.base.outputs.buetow_cloud_zone_id
   name    = "nginx.buetow.cloud."
   type    = "A"
+
+  alias {
+    name                   = data.terraform_remote_state.elb.outputs.alb_dns_name
+    zone_id                = data.terraform_remote_state.elb.outputs.alb_zone_id
+    evaluate_target_health = true
+  }
+}
+
+resource "aws_route53_record" "aaaa_record_nginx" {
+  zone_id = data.terraform_remote_state.base.outputs.buetow_cloud_zone_id
+  name    = "nginx.buetow.cloud."
+  type    = "AAAA"
 
   alias {
     name                   = data.terraform_remote_state.elb.outputs.alb_dns_name

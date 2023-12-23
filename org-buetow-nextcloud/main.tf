@@ -35,7 +35,7 @@ resource "aws_instance" "nextcloud" {
   }
 }
 
-resource "aws_route53_record" "nextcloud_ec2_aws_buetow_org" {
+resource "aws_route53_record" "nextcloud_ec2_buetow_cloud" {
   zone_id = data.terraform_remote_state.base.outputs.buetow_cloud_zone_id
   name    = "nextcloud-ec2.buetow.cloud"
   type    = "A"

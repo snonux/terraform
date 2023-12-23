@@ -1,6 +1,14 @@
 resource "aws_efs_file_system" "self_hosted_services_efs" {
   creation_token = "self-hosted-services-efs"
   encrypted      = true
+
+  #  backup_policy {
+  #  status = "ENABLED"
+  #}
+
+  tags = {
+    Name = "self-hosted-services"
+  }
 }
 
 resource "aws_efs_mount_target" "efs_mt_a" {

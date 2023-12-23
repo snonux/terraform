@@ -9,3 +9,4 @@ destroy:
 	cd org-buetow-ecs && terraform destroy -auto-approve
 	cd org-buetow-elb && terraform destroy -auto-approve
 	cd org-buetow-bastion && terraform destroy -auto-approve
+recreate: destroy apply
