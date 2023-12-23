@@ -1,6 +1,6 @@
-resource "aws_route53_record" "a_record_wallabag" {
+resource "aws_route53_record" "a_record_vault" {
   zone_id = data.terraform_remote_state.base.outputs.buetow_cloud_zone_id
-  name    = "bag.buetow.cloud."
+  name    = "vault.buetow.cloud."
   type    = "A"
 
   alias {
@@ -10,9 +10,9 @@ resource "aws_route53_record" "a_record_wallabag" {
   }
 }
 
-resource "aws_route53_record" "aaaa_record_wallabag" {
+resource "aws_route53_record" "aaaa_record_vault" {
   zone_id = data.terraform_remote_state.base.outputs.buetow_cloud_zone_id
-  name    = "bag.buetow.cloud."
+  name    = "vault.buetow.cloud."
   type    = "AAAA"
 
   alias {
@@ -22,8 +22,8 @@ resource "aws_route53_record" "aaaa_record_wallabag" {
   }
 }
 
-resource "aws_ecs_task_definition" "wallabag" {
-  family                   = "wallabag"
+resource "aws_ecs_task_definition" "vault" {
+  family                   = "vault"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
   cpu                      = "256"
@@ -31,45 +31,24 @@ resource "aws_ecs_task_definition" "wallabag" {
   execution_role_arn       = aws_iam_role.ecs_execution_role.arn
 
   volume {
-    name = "wallabag-db-efs-volume"
+    name = "vault-data-efs-volume"
     efs_volume_configuration {
       file_system_id = data.terraform_remote_state.base.outputs.self_hosted_services_efs_id
-      root_directory = "/ecs/wallabag/data/db"
-    }
-  }
-
-  volume {
-    name = "wallabag-assets-efs-volume"
-    efs_volume_configuration {
-      file_system_id = data.terraform_remote_state.base.outputs.self_hosted_services_efs_id
-      root_directory = "/ecs/wallabag/data/assets"
+      root_directory = "/ecs/vault/data"
     }
   }
 
   container_definitions = jsonencode([{
-    name  = "wallabag",
-    image = "wallabag/wallabag",
-    #entryPoint = ["/bin/sh", "-c"],
-    #command    = ["ls", "-ld", "/var/www/wallabag/*"],
+    name  = "vault",
+    image = "vaultwarden/server:latest",
     portMappings = [{
       containerPort = 80,
       hostPort      = 80
     }],
-    environment = [
-      {
-        name  = "SYMFONY__ENV__DOMAIN_NAME",
-        value = "https://bag.buetow.cloud"
-      }
-    ],
     mountPoints = [
       {
-        sourceVolume  = "wallabag-db-efs-volume"
-        containerPath = "/var/www/wallabag/data/db"
-        readOnly      = false
-      },
-      {
-        sourceVolume  = "wallabag-assets-efs-volume"
-        containerPath = "/var/www/wallabag/data/assets"
+        sourceVolume  = "vault-data-efs-volume"
+        containerPath = "/data"
         readOnly      = false
       }
     ],
@@ -78,23 +57,23 @@ resource "aws_ecs_task_definition" "wallabag" {
       "options" : {
         "awslogs-group" : "/ecs/containers",
         "awslogs-region" : "eu-central-1",
-        "awslogs-stream-prefix" : "wallabag"
+        "awslogs-stream-prefix" : "vault"
       }
     }
   }])
 }
 
-resource "aws_ecs_service" "wallabag" {
-  name            = "wallabag"
+resource "aws_ecs_service" "vault" {
+  name            = "vault"
   cluster         = aws_ecs_cluster.ecs_cluster.id
-  task_definition = aws_ecs_task_definition.wallabag.arn
+  task_definition = aws_ecs_task_definition.vault.arn
   launch_type     = "FARGATE"
   desired_count   = 1
 
   load_balancer {
-    target_group_arn = aws_lb_target_group.wallabag_tg.arn
-    container_name   = "wallabag" # Must match the name in your container definition
-    container_port   = 80         # The port your container is listening on
+    target_group_arn = aws_lb_target_group.vault_tg.arn
+    container_name   = "vault" # Must match the name in your container definition
+    container_port   = 80      # The port your container is listening on
   }
 
   network_configuration {
@@ -108,8 +87,8 @@ resource "aws_ecs_service" "wallabag" {
   }
 }
 
-resource "aws_lb_target_group" "wallabag_tg" {
-  name        = "wallabag-tg"
+resource "aws_lb_target_group" "vault_tg" {
+  name        = "vault-tg"
   port        = 80
   protocol    = "HTTP"
   vpc_id      = data.terraform_remote_state.base.outputs.vpc_id
@@ -120,25 +99,25 @@ resource "aws_lb_target_group" "wallabag_tg" {
     healthy_threshold   = 2
     unhealthy_threshold = 2
     interval            = 30
-    path                = "/login" # Modify if your app has a specific health check path
+    path                = "/"
     protocol            = "HTTP"
     timeout             = 3
     matcher             = "200-299"
   }
 }
 
-resource "aws_lb_listener_rule" "wallabag_https_listener_rule" {
+resource "aws_lb_listener_rule" "vault_https_listener_rule" {
   listener_arn = data.terraform_remote_state.elb.outputs.alb_https_listener_arn
-  priority     = 101
+  priority     = 103
 
   action {
     type             = "forward"
-    target_group_arn = aws_lb_target_group.wallabag_tg.arn
+    target_group_arn = aws_lb_target_group.vault_tg.arn
   }
 
   condition {
     host_header {
-      values = ["bag.buetow.cloud"]
+      values = ["vault.buetow.cloud"]
     }
   }
 }
