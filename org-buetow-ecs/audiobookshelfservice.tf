@@ -10,6 +10,18 @@ resource "aws_route53_record" "a_record_audiobookshelf" {
   }
 }
 
+resource "aws_route53_record" "aaaa_record_audiobookshelf" {
+  zone_id = data.terraform_remote_state.base.outputs.buetow_cloud_zone_id
+  name    = "audiobookshelf.buetow.cloud."
+  type    = "AAAA"
+
+  alias {
+    name                   = data.terraform_remote_state.elb.outputs.alb_dns_name
+    zone_id                = data.terraform_remote_state.elb.outputs.alb_zone_id
+    evaluate_target_health = true
+  }
+}
+
 resource "aws_ecs_task_definition" "audiobookshelf" {
   family                   = "audiobookshelf"
   network_mode             = "awsvpc"

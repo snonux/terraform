@@ -1,7 +1,19 @@
 resource "aws_route53_record" "a_record_wallabag" {
   zone_id = data.terraform_remote_state.base.outputs.buetow_cloud_zone_id
-  name    = "wallabag.buetow.cloud."
+  name    = "bag.buetow.cloud."
   type    = "A"
+
+  alias {
+    name                   = data.terraform_remote_state.elb.outputs.alb_dns_name
+    zone_id                = data.terraform_remote_state.elb.outputs.alb_zone_id
+    evaluate_target_health = true
+  }
+}
+
+resource "aws_route53_record" "aaaa_record_wallabag" {
+  zone_id = data.terraform_remote_state.base.outputs.buetow_cloud_zone_id
+  name    = "bag.buetow.cloud."
+  type    = "AAAA"
 
   alias {
     name                   = data.terraform_remote_state.elb.outputs.alb_dns_name
@@ -77,7 +89,7 @@ resource "aws_ecs_service" "wallabag" {
   cluster         = aws_ecs_cluster.ecs_cluster.id
   task_definition = aws_ecs_task_definition.wallabag.arn
   launch_type     = "FARGATE"
-  desired_count   = 0
+  desired_count   = 1
 
   load_balancer {
     target_group_arn = aws_lb_target_group.wallabag_tg.arn

@@ -3,6 +3,7 @@ resource "aws_lb" "alb" {
   internal           = false
   load_balancer_type = "application"
   security_groups    = [aws_security_group.alb_sg.id]
+  ip_address_type    = "dualstack"
   subnets = [
     data.terraform_remote_state.base.outputs.public_subnet_a_id,
     data.terraform_remote_state.base.outputs.public_subnet_b_id,
