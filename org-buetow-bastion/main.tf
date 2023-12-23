@@ -17,8 +17,11 @@ resource "aws_key_pair" "id_rsa_pub" {
 }
 
 resource "aws_instance" "bastion" {
-  ami                = "ami-024f768332f080c5e" # Amazon Linux 2023
-  instance_type      = "t2.micro"
+  #ami                = "ami-024f768332f080c5e" # Amazon Linux 2023
+  #ami                = "ami-0965c162c412da7ca" # Fedora Cloud ase 37.1.7
+  ami = "ami-0c5e86158864d14dd" # RHEL-9.3.0 arm
+  #instance_type      = "t2.micro"
+  instance_type      = "t4g.nano" # ARM
   key_name           = aws_key_pair.id_rsa_pub.key_name
   subnet_id          = data.terraform_remote_state.base.outputs.public_subnet_a_id
   ipv6_address_count = 1
