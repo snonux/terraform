@@ -21,6 +21,8 @@ resource "aws_instance" "bastion" {
   instance_type = "t2.micro"
   key_name      = aws_key_pair.id_rsa_pub.key_name
   subnet_id     = data.terraform_remote_state.base.outputs.public_subnet_a_id
+  #ipv6_address_count = 1
+  #ipv6_addresses     = [data.terraform_remote_state.base.public_subnet_a_ipv6_cidr_block]
 
   vpc_security_group_ids = [
     data.terraform_remote_state.base.outputs.allow_ssh_sg_id,
@@ -28,6 +30,7 @@ resource "aws_instance" "bastion" {
     data.terraform_remote_state.base.outputs.allow_outbound_sg_id,
   ]
   user_data = data.template_file.user_data.rendered
+
 
   tags = {
     Name = "bastion"
