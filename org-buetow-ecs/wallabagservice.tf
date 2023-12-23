@@ -138,7 +138,7 @@ resource "aws_lb_listener_rule" "wallabag_https_listener_rule" {
 
   condition {
     host_header {
-      values = ["wallabag.buetow.cloud"]
+      values = ["bag.buetow.cloud"]
     }
   }
 }

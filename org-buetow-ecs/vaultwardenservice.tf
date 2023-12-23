@@ -117,7 +117,7 @@ resource "aws_lb_listener_rule" "vaultwarden_https_listener_rule" {
 
   condition {
     host_header {
-      values = ["vaultwarden.buetow.cloud"]
+      values = ["vault.buetow.cloud"]
     }
   }
 }
