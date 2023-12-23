@@ -34,7 +34,7 @@ resource "aws_ecs_task_definition" "bag" {
     name = "bag-db-efs-volume"
     efs_volume_configuration {
       file_system_id = data.terraform_remote_state.base.outputs.self_hosted_services_efs_id
-      root_directory = "/ecs/bag/data/db"
+      root_directory = "/ecs/wallabag/data/db"
     }
   }
 
@@ -42,7 +42,7 @@ resource "aws_ecs_task_definition" "bag" {
     name = "bag-assets-efs-volume"
     efs_volume_configuration {
       file_system_id = data.terraform_remote_state.base.outputs.self_hosted_services_efs_id
-      root_directory = "/ecs/bag/data/assets"
+      root_directory = "/ecs/wallabag/data/assets"
     }
   }
 
