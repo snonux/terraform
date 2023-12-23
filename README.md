@@ -5,9 +5,7 @@
 * Collect uprecords for my EC2 instances
 * Nextcloud and Bastion: Auto re-create in different AZ on failure.
 * Input variables, for configuring different service hosts.
-* Enable IPv6 for Bastion
-* Enable IPv6 for ECS/Fargate ALB ingresses.
-* Backup EFS, don't let `terraform destroy` erease all my data!
+* Backup EFS, don't let `terraform destroy` erease all my data! Or create Backup
 
 ## Create base environment
 
