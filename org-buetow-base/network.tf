@@ -97,26 +97,19 @@ resource "aws_security_group" "allow_web" {
     ipv6_cidr_blocks = ["::/0"]
   }
 
-  ingress {
-    from_port        = 8080
-    to_port          = 8080
-    protocol         = "tcp"
-    cidr_blocks      = ["0.0.0.0/0"]
-    ipv6_cidr_blocks = ["::/0"]
-  }
+  # syncthing testing. TODO: Remove?
+  #  ingress {
+  #  from_port        = 8384
+  #  to_port          = 8384
+  #  protocol         = "tcp"
+  #  cidr_blocks      = ["0.0.0.0/0"]
+  #  ipv6_cidr_blocks = ["::/0"]
+  #}
 
   ingress {
     from_port        = 443
     to_port          = 443
     protocol         = "tcp"
-    cidr_blocks      = ["0.0.0.0/0"]
-    ipv6_cidr_blocks = ["::/0"]
-  }
-
-  egress {
-    from_port        = 0
-    to_port          = 0
-    protocol         = "-1"
     cidr_blocks      = ["0.0.0.0/0"]
     ipv6_cidr_blocks = ["::/0"]
   }
@@ -128,9 +121,10 @@ resource "aws_security_group" "allow_outbound" {
   vpc_id      = aws_vpc.vpc.id
 
   egress {
-    from_port   = 0
-    to_port     = 0
-    protocol    = "-1"          # -1 means all protocols
-    cidr_blocks = ["0.0.0.0/0"] # Allows outbound traffic to all IP addresses
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1"          # -1 means all protocols
+    cidr_blocks      = ["0.0.0.0/0"] # Allows outbound traffic to all IP addresses
+    ipv6_cidr_blocks = ["::/0"]
   }
 }

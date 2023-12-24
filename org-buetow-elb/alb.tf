@@ -2,41 +2,16 @@ resource "aws_lb" "alb" {
   name               = "alb"
   internal           = false
   load_balancer_type = "application"
-  security_groups    = [aws_security_group.alb_sg.id]
-  ip_address_type    = "dualstack"
+  security_groups = [
+    data.terraform_remote_state.base.outputs.allow_web_sg_id,
+    data.terraform_remote_state.base.outputs.allow_outbound_sg_id,
+  ]
+  ip_address_type = "dualstack"
   subnets = [
     data.terraform_remote_state.base.outputs.public_subnet_a_id,
     data.terraform_remote_state.base.outputs.public_subnet_b_id,
     data.terraform_remote_state.base.outputs.public_subnet_c_id,
   ]
-}
-
-resource "aws_security_group" "alb_sg" {
-  vpc_id = data.terraform_remote_state.base.outputs.vpc_id
-
-  ingress {
-    from_port        = 80
-    to_port          = 80
-    protocol         = "tcp"
-    cidr_blocks      = ["0.0.0.0/0"]
-    ipv6_cidr_blocks = ["::/0"]
-  }
-
-  ingress {
-    from_port        = 443
-    to_port          = 443
-    protocol         = "tcp"
-    cidr_blocks      = ["0.0.0.0/0"]
-    ipv6_cidr_blocks = ["::/0"]
-  }
-
-  egress {
-    from_port        = 0
-    to_port          = 0
-    protocol         = "-1"
-    cidr_blocks      = ["0.0.0.0/0"]
-    ipv6_cidr_blocks = ["::/0"]
-  }
 }
 
 resource "aws_lb_listener" "http_listener" {
