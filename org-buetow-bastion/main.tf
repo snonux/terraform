@@ -18,8 +18,8 @@ resource "aws_key_pair" "id_rsa_pub" {
 
 resource "aws_instance" "bastion" {
   #ami                = "ami-024f768332f080c5e" # Amazon Linux 2023
-  #ami                = "ami-0965c162c412da7ca" # Fedora Cloud ase 37.1.7
-  ami = "ami-0c5e86158864d14dd" # RHEL-9.3.0 arm
+  ami = "ami-0d0b8f748d0b16f5e" # Amazon Linux 2023 ARM
+  # ami = "ami-0c5e86158864d14dd" # RHEL-9.3.0 arm
   #instance_type      = "t2.micro"
   instance_type      = "t4g.nano" # ARM
   key_name           = aws_key_pair.id_rsa_pub.key_name

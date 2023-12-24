@@ -10,7 +10,7 @@ sudo usermod -a -G docker ec2-user
 # EFS
 yum install -y amazon-efs-utils
 mkdir /mnt/efs
-echo '${efs_id}.efs.${region}.amazonaws.com:/ /mnt/efs nfs4 defaults,vers=4.1 0 0' >> /etc/fstab
+echo '${efs_id}.efs.${region}.amazonaws.com:/ec2/nextcloud /mnt/efs nfs4 defaults,vers=4.1 0 0' >> /etc/fstab
 while ! mountpoint /mnt/efs; do
     echo 'Retrying to mount file systems after 10s...'
     mount -a
