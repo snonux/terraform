@@ -86,7 +86,7 @@ resource "aws_lb_listener_rule" "syncthing_ui_https_listener_rule" {
 
   condition {
     host_header {
-      values = ["syncthing-ui.buetow.cloud"]
+      values = ["syncthing.buetow.cloud"]
     }
   }
 }

@@ -3,7 +3,10 @@
 ## TODO's
 
 * Collect uprecords for my EC2 instances
-* Nextcloud and Bastion: Auto re-create in different AZ on failure.
+* Migrate `audiobookshelf.buetow.org` to `audiobookshelf.buetow.cloud`.
+* Podcast through Audiobookshelf - try it out
+* Migrate `bag.buetow.org` to `bag.buetow.cloud`.
+* Contact and Calendar sync via ECS (migrate from Nextcloud)
 * Input variables, for configuring different service hosts.
 * Backup EFS, don't let `terraform destroy` erease all my data! Or create Backup
 
