@@ -26,23 +26,23 @@ resource "aws_ecs_task_definition" "bag" {
   family                   = "bag"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
-  cpu                      = "256"
-  memory                   = "512"
+  cpu                      = "1024"
+  memory                   = "2048"
   execution_role_arn       = aws_iam_role.ecs_execution_role.arn
 
   volume {
-    name = "bag-db-efs-volume"
+    name = "bag-data-efs-volume"
     efs_volume_configuration {
       file_system_id = data.terraform_remote_state.base.outputs.self_hosted_services_efs_id
-      root_directory = "/ecs/bag/data/db"
+      root_directory = "/ecs/bag/data"
     }
   }
 
   volume {
-    name = "bag-assets-efs-volume"
+    name = "bag-images-efs-volume"
     efs_volume_configuration {
       file_system_id = data.terraform_remote_state.base.outputs.self_hosted_services_efs_id
-      root_directory = "/ecs/bag/data/assets"
+      root_directory = "/ecs/bag/images"
     }
   }
 
@@ -61,13 +61,13 @@ resource "aws_ecs_task_definition" "bag" {
     ],
     mountPoints = [
       {
-        sourceVolume  = "bag-db-efs-volume"
-        containerPath = "/var/www/bag/data/db"
+        sourceVolume  = "bag-data-efs-volume"
+        containerPath = "/var/www/wallabag/data"
         readOnly      = false
       },
       {
-        sourceVolume  = "bag-assets-efs-volume"
-        containerPath = "/var/www/bag/data/assets"
+        sourceVolume  = "bag-images-efs-volume"
+        containerPath = "/var/www/wallabag/data/assets/images"
         readOnly      = false
       }
     ],

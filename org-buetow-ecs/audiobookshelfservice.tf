@@ -26,8 +26,8 @@ resource "aws_ecs_task_definition" "audiobookshelf" {
   family                   = "audiobookshelf"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
-  cpu                      = "256"
-  memory                   = "512"
+  cpu                      = "1024"
+  memory                   = "2048"
   execution_role_arn       = aws_iam_role.ecs_execution_role.arn
 
   volume {
@@ -38,13 +38,14 @@ resource "aws_ecs_task_definition" "audiobookshelf" {
     }
   }
 
-  volume {
-    name = "audiobookshelf-metadata-efs-volume"
-    efs_volume_configuration {
-      file_system_id = data.terraform_remote_state.base.outputs.self_hosted_services_efs_id
-      root_directory = "/ecs/audiobookshelf/metadata"
-    }
-  }
+  # Can't use Audiobookshelf's metadata on EFS (Mobile app won't stream, due to missing inode info???)
+  #volume {
+  #  name = "audiobookshelf-metadata-efs-volume"
+  #  efs_volume_configuration {
+  #    file_system_id = data.terraform_remote_state.base.outputs.self_hosted_services_efs_id
+  #    root_directory = "/ecs/audiobookshelf/metadata"
+  #  }
+  #}
 
   volume {
     name = "audiobookshelf-audiobooks-efs-volume"
@@ -75,11 +76,11 @@ resource "aws_ecs_task_definition" "audiobookshelf" {
         containerPath = "/config"
         readOnly      = false
       },
-      {
-        sourceVolume  = "audiobookshelf-metadata-efs-volume"
-        containerPath = "/metadata"
-        readOnly      = false
-      },
+      #{
+      #  sourceVolume  = "audiobookshelf-metadata-efs-volume"
+      #  containerPath = "/metadata"
+      #  readOnly      = false
+      #},
       {
         sourceVolume  = "audiobookshelf-audiobooks-efs-volume"
         containerPath = "/audiobooks"
