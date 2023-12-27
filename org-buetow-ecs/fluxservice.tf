@@ -34,8 +34,8 @@ resource "aws_ecs_task_definition" "flux" {
     name  = "flux",
     image = "miniflux/miniflux:latest",
     portMappings = [{
-      containerPort = 80,
-      hostPort      = 80
+      containerPort = 8080,
+      hostPort      = 8080
     }],
     environment = [
       {
@@ -71,16 +71,18 @@ resource "aws_ecs_task_definition" "flux" {
 }
 
 resource "aws_ecs_service" "flux" {
-  name            = "flux"
-  cluster         = aws_ecs_cluster.ecs_cluster.id
-  task_definition = aws_ecs_task_definition.flux.arn
-  launch_type     = "FARGATE"
-  desired_count   = 1
+  name                               = "flux"
+  cluster                            = aws_ecs_cluster.ecs_cluster.id
+  task_definition                    = aws_ecs_task_definition.flux.arn
+  launch_type                        = "FARGATE"
+  deployment_maximum_percent         = 100
+  deployment_minimum_healthy_percent = 0
+  desired_count                      = 1
 
   load_balancer {
     target_group_arn = aws_lb_target_group.flux_tg.arn
     container_name   = "flux" # Must match the name in your container definition
-    container_port   = 80     # The port your container is listening on
+    container_port   = 8080   # The port your container is listening on
   }
 
   network_configuration {
@@ -96,7 +98,7 @@ resource "aws_ecs_service" "flux" {
 
 resource "aws_lb_target_group" "flux_tg" {
   name        = "flux-tg"
-  port        = 80
+  port        = 8080
   protocol    = "HTTP"
   vpc_id      = data.terraform_remote_state.base.outputs.vpc_id
   target_type = "ip"

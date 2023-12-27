@@ -99,14 +99,14 @@ resource "aws_ecs_task_definition" "fluxpostgres" {
         readOnly      = false
       }
     ],
-    "logConfiguration" : {
-      "logDriver" : "awslogs",
-      "options" : {
-        "awslogs-group" : "/ecs/containers",
-        "awslogs-region" : "eu-central-1",
-        "awslogs-stream-prefix" : "fluxpostgres"
-      }
-    }
+    #"logConfiguration" : {
+    #  "logDriver" : "awslogs",
+    #  "options" : {
+    #    "awslogs-group" : "/ecs/containers",
+    #    "awslogs-region" : "eu-central-1",
+    #    "awslogs-stream-prefix" : "fluxpostgres"
+    #  }
+    #}
   }])
 }
 
@@ -147,11 +147,13 @@ resource "aws_security_group" "fluxpostgres" {
   }
 }
 resource "aws_ecs_service" "fluxpostgres" {
-  name            = "fluxpostgres"
-  cluster         = aws_ecs_cluster.ecs_cluster.id
-  task_definition = aws_ecs_task_definition.fluxpostgres.arn
-  launch_type     = "FARGATE"
-  desired_count   = 1
+  name                               = "fluxpostgres"
+  cluster                            = aws_ecs_cluster.ecs_cluster.id
+  task_definition                    = aws_ecs_task_definition.fluxpostgres.arn
+  launch_type                        = "FARGATE"
+  deployment_maximum_percent         = 100
+  deployment_minimum_healthy_percent = 0
+  desired_count                      = 1
 
   load_balancer {
     target_group_arn = aws_lb_target_group.fluxpostgres_tcp.arn

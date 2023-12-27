@@ -245,11 +245,13 @@ resource "aws_security_group" "syncthing" {
   }
 }
 resource "aws_ecs_service" "syncthing" {
-  name            = "syncthing"
-  cluster         = aws_ecs_cluster.ecs_cluster.id
-  task_definition = aws_ecs_task_definition.syncthing.arn
-  launch_type     = "FARGATE"
-  desired_count   = 1
+  name                               = "syncthing"
+  cluster                            = aws_ecs_cluster.ecs_cluster.id
+  task_definition                    = aws_ecs_task_definition.syncthing.arn
+  launch_type                        = "FARGATE"
+  deployment_maximum_percent         = 100
+  deployment_minimum_healthy_percent = 0
+  desired_count                      = 1
 
   load_balancer {
     target_group_arn = aws_lb_target_group.syncthing_ui_tg.arn
