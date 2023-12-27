@@ -33,25 +33,25 @@ resource "aws_lb_target_group" "fluxpostgres_tcp" {
 }
 
 resource "aws_route53_record" "a_record_fluxpostgres" {
-  zone_id = data.terraform_remote_state.base.outputs.buetow_cloud_zone_id
-  name    = "fluxpostgres.buetow.cloud." # TODO, internal DNS?
+  zone_id = data.terraform_remote_state.base.outputs.buetow_internal_zone_id
+  name    = "fluxpostgres.buetow.internal."
   type    = "A"
 
   alias {
-    name                   = data.terraform_remote_state.elb.outputs.alb_dns_name
-    zone_id                = data.terraform_remote_state.elb.outputs.alb_zone_id
+    name                   = aws_lb.fluxpostgres_nlb.dns_name
+    zone_id                = aws_lb.fluxpostgres_nlb.zone_id
     evaluate_target_health = true
   }
 }
 
 resource "aws_route53_record" "aaaa_record_fluxpostgres" {
-  zone_id = data.terraform_remote_state.base.outputs.buetow_cloud_zone_id
-  name    = "fluxpostgres.buetow.cloud." # TODO, internal DNS?
+  zone_id = data.terraform_remote_state.base.outputs.buetow_internal_zone_id
+  name    = "fluxpostgres.buetow.internal."
   type    = "AAAA"
 
   alias {
-    name                   = data.terraform_remote_state.elb.outputs.alb_dns_name
-    zone_id                = data.terraform_remote_state.elb.outputs.alb_zone_id
+    name                   = aws_lb.fluxpostgres_nlb.dns_name
+    zone_id                = aws_lb.fluxpostgres_nlb.zone_id
     evaluate_target_health = true
   }
 }
@@ -95,18 +95,18 @@ resource "aws_ecs_task_definition" "fluxpostgres" {
     mountPoints = [
       {
         sourceVolume  = "fluxpostgres-efs-volume"
-        containerPath = "/var/lib/postgres/data"
+        containerPath = "/var/lib/postgresql/data"
         readOnly      = false
       }
     ],
-    #"logConfiguration" : {
-    #  "logDriver" : "awslogs",
-    #  "options" : {
-    #    "awslogs-group" : "/ecs/containers",
-    #    "awslogs-region" : "eu-central-1",
-    #    "awslogs-stream-prefix" : "fluxpostgres"
-    #  }
-    #}
+    "logConfiguration" : {
+      "logDriver" : "awslogs",
+      "options" : {
+        "awslogs-group" : "/ecs/containers",
+        "awslogs-region" : "eu-central-1",
+        "awslogs-stream-prefix" : "fluxpostgres"
+      }
+    }
   }])
 }
 
@@ -134,13 +134,13 @@ resource "aws_security_group" "fluxpostgres" {
   }
 
   # TODO: Required?
-  egress {
-    from_port        = 0
-    to_port          = 0
-    protocol         = "-1" # Allows all outbound traffic
-    cidr_blocks      = ["0.0.0.0/0"]
-    ipv6_cidr_blocks = ["::/0"]
-  }
+  #egress {
+  #  from_port        = 0
+  #  to_port          = 0
+  #  protocol         = "-1" # Allows all outbound traffic
+  #  cidr_blocks      = ["0.0.0.0/0"]
+  #  ipv6_cidr_blocks = ["::/0"]
+  #}
 
   tags = {
     Name = "allow-fluxpostgres"

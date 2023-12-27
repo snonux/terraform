@@ -2,8 +2,9 @@
 
 # Docker
 sudo yum update -y
+sudo install postgresql15 -y # PostgreSQL client programs
 sudo amazon-linux-extras install docker -y
-sudo service docker enable
+sudo service docker enabl
 sudo service docker start
 sudo usermod -a -G docker ec2-user
 

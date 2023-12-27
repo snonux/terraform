@@ -34,8 +34,8 @@ output "buetow_cloud_zone_id" {
   value = data.aws_route53_zone.buetow_cloud.zone_id
 }
 
-output "buetow_private_zone_id" {
-  value = aws_route53_zone.buetow_private.zone_id
+output "buetow_internal_zone_id" {
+  value = aws_route53_zone.buetow_internal.zone_id
 }
 
 output "buetow_cloud_certificate_arn" {
