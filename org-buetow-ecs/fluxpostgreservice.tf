@@ -13,6 +13,10 @@ resource "aws_lb" "fluxpostgres_nlb" {
   ]
 }
 
+#output "fluxpostgres_dns_name" {
+#  value = aws_lb.fluxpostgres_nlb.dns_name
+#}
+
 resource "aws_lb_listener" "fluxpostgres_tcp" {
   load_balancer_arn = aws_lb.fluxpostgres_nlb.arn
   protocol          = "TCP"
@@ -133,14 +137,14 @@ resource "aws_security_group" "fluxpostgres" {
     ipv6_cidr_blocks = ["::/0"]
   }
 
-  # TODO: Required?
-  #egress {
-  #  from_port        = 0
-  #  to_port          = 0
-  #  protocol         = "-1" # Allows all outbound traffic
-  #  cidr_blocks      = ["0.0.0.0/0"]
-  #  ipv6_cidr_blocks = ["::/0"]
-  #}
+  # TODO: Required? Yes for contianer pull
+  egress {
+    from_port        = 0
+    to_port          = 0
+    protocol         = "-1" # Allows all outbound traffic
+    cidr_blocks      = ["0.0.0.0/0"]
+    ipv6_cidr_blocks = ["::/0"]
+  }
 
   tags = {
     Name = "allow-fluxpostgres"

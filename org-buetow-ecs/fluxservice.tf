@@ -33,6 +33,10 @@ resource "aws_ecs_task_definition" "flux" {
   container_definitions = jsonencode([{
     name  = "flux",
     image = "miniflux/miniflux:latest",
+    depends_on = [{
+      "containerName" : "fluxpostgres",
+      "condition" : "START"
+    }],
     portMappings = [{
       containerPort = 8080,
       hostPort      = 8080
@@ -40,24 +44,24 @@ resource "aws_ecs_task_definition" "flux" {
     environment = [
       {
         name  = "DATABASE_URL",
-        value = "postgres://miniflux:${var.fluxdb_password}@fluxpostgres.buetow.internal/miniflux?sslmode=disable",
+        value = "postgres://miniflux:${var.fluxdb_password}@${aws_lb.fluxpostgres_nlb.dns_name}/miniflux?sslmode=disable",
       },
       {
         name  = "RUN_MIGRATIONS",
         value = "1",
       },
-      {
-        name  = "CREATE_ADMIN",
-        value = "1",
-      },
-      {
-        name  = "ADMIN_USERNAME",
-        value = "chef",
-      },
-      {
-        name  = "ADMIN_PASSWORD",
-        value = "hamburger",
-      },
+      #{
+      #  name  = "CREATE_ADMIN",
+      #  value = "1",
+      #},
+      #{
+      #  name  = "ADMIN_USERNAME",
+      #  value = "FOO",
+      #},
+      #{
+      #  name  = "ADMIN_PASSWORD",
+      #  value = "BAR",
+      #}
     ],
     "logConfiguration" : {
       "logDriver" : "awslogs",
@@ -111,7 +115,7 @@ resource "aws_lb_target_group" "flux_tg" {
     path                = "/" # Modify if your app has a specific health check path
     protocol            = "HTTP"
     timeout             = 3
-    matcher             = "200-299"
+    matcher             = "200-499" # miniflux returns method not allowed to the LB check.
   }
 }
 
