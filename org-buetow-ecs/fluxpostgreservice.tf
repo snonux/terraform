@@ -89,7 +89,7 @@ resource "aws_ecs_task_definition" "fluxpostgres" {
       },
       {
         name  = "POSTGRES_PASSWORD",
-        value = "ONLYFORTESTING"
+        value = var.fluxdb_password,
       }
     ],
     mountPoints = [
