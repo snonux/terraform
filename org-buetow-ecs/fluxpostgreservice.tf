@@ -36,29 +36,29 @@ resource "aws_lb_target_group" "fluxpostgres_tcp" {
   target_type = "ip"
 }
 
-resource "aws_route53_record" "a_record_fluxpostgres" {
-  zone_id = data.terraform_remote_state.base.outputs.buetow_internal_zone_id
-  name    = "fluxpostgres.buetow.internal."
-  type    = "A"
+#resource "aws_route53_record" "a_record_fluxpostgres" {
+#  zone_id = data.terraform_remote_state.base.outputs.buetow_internal_zone_id
+#  name    = "fluxpostgres.buetow.internal."
+#  type    = "A"
+#
+#  alias {
+#    name                   = aws_lb.fluxpostgres_nlb.dns_name
+#    zone_id                = aws_lb.fluxpostgres_nlb.zone_id
+#    evaluate_target_health = true
+#  }
+#}
 
-  alias {
-    name                   = aws_lb.fluxpostgres_nlb.dns_name
-    zone_id                = aws_lb.fluxpostgres_nlb.zone_id
-    evaluate_target_health = true
-  }
-}
-
-resource "aws_route53_record" "aaaa_record_fluxpostgres" {
-  zone_id = data.terraform_remote_state.base.outputs.buetow_internal_zone_id
-  name    = "fluxpostgres.buetow.internal."
-  type    = "AAAA"
-
-  alias {
-    name                   = aws_lb.fluxpostgres_nlb.dns_name
-    zone_id                = aws_lb.fluxpostgres_nlb.zone_id
-    evaluate_target_health = true
-  }
-}
+#resource "aws_route53_record" "aaaa_record_fluxpostgres" {
+#  zone_id = data.terraform_remote_state.base.outputs.buetow_internal_zone_id
+#  name    = "fluxpostgres.buetow.internal."
+#  type    = "AAAA"
+#
+#  alias {
+#    name                   = aws_lb.fluxpostgres_nlb.dns_name
+#    zone_id                = aws_lb.fluxpostgres_nlb.zone_id
+#    evaluate_target_health = true
+#  }
+#}
 
 resource "aws_ecs_task_definition" "fluxpostgres" {
   family                   = "fluxpostgres"

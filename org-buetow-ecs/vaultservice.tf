@@ -70,7 +70,7 @@ resource "aws_ecs_service" "vault" {
   launch_type                        = "FARGATE"
   deployment_maximum_percent         = 100
   deployment_minimum_healthy_percent = 0
-  desired_count                      = 1
+  desired_count                      = 0
 
   load_balancer {
     target_group_arn = aws_lb_target_group.vault_tg.arn
