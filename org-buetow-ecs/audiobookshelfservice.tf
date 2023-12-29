@@ -30,6 +30,10 @@ resource "aws_ecs_task_definition" "audiobookshelf" {
   memory                   = "2048"
   execution_role_arn       = aws_iam_role.ecs_execution_role.arn
 
+  tags = {
+    Name = "audiobookshelf-task"
+  }
+
   volume {
     name = "audiobookshelf-config-efs-volume"
     efs_volume_configuration {
@@ -111,6 +115,10 @@ resource "aws_ecs_service" "audiobookshelf" {
   deployment_maximum_percent         = 100
   deployment_minimum_healthy_percent = 0
   desired_count                      = 1
+
+  tags = {
+    Name = "audiobookshelf-service"
+  }
 
   load_balancer {
     target_group_arn = aws_lb_target_group.audiobookshelf_tg.arn

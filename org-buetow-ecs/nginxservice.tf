@@ -30,6 +30,10 @@ resource "aws_ecs_task_definition" "nginx" {
   memory                   = "512"
   execution_role_arn       = aws_iam_role.ecs_execution_role.arn
 
+  tags = {
+    Name = "nginx-task"
+  }
+
   container_definitions = jsonencode([{
     name  = "nginx",
     image = "nginx:latest",
@@ -54,6 +58,10 @@ resource "aws_ecs_service" "nginx" {
   task_definition = aws_ecs_task_definition.nginx.arn
   launch_type     = "FARGATE"
   desired_count   = 0
+
+  tags = {
+    Name = "nginx-service"
+  }
 
   load_balancer {
     target_group_arn = aws_lb_target_group.nginx_tg.arn

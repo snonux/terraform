@@ -30,6 +30,10 @@ resource "aws_ecs_task_definition" "flux" {
   memory                   = "512"
   execution_role_arn       = aws_iam_role.ecs_execution_role.arn
 
+  tags = {
+    Name = "flux-task"
+  }
+
   container_definitions = jsonencode([{
     name  = "flux",
     image = "miniflux/miniflux:latest",
@@ -82,6 +86,10 @@ resource "aws_ecs_service" "flux" {
   deployment_maximum_percent         = 100
   deployment_minimum_healthy_percent = 0
   desired_count                      = 1
+
+  tags = {
+    Name = "flux-service"
+  }
 
   load_balancer {
     target_group_arn = aws_lb_target_group.flux_tg.arn
