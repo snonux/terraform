@@ -1,5 +1,9 @@
 resource "aws_ecs_cluster" "ecs_cluster" {
   name = "ecs-cluster"
+
+  tags = {
+    Name = "ecs-cluster"
+  }
 }
 
 resource "aws_iam_role" "ecs_execution_role" {
@@ -15,6 +19,10 @@ resource "aws_iam_role" "ecs_execution_role" {
       },
     }]
   })
+
+  tags = {
+    Name = "ecs-cluster"
+  }
 }
 
 resource "aws_iam_role_policy_attachment" "ecs_execution_role_policy_attach" {

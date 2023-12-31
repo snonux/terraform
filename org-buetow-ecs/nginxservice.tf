@@ -31,7 +31,7 @@
 #  execution_role_arn       = aws_iam_role.ecs_execution_role.arn
 #
 #  tags = {
-#    Name = "nginx-task"
+#    Name = "nginx"
 #  }
 #
 #  container_definitions = jsonencode([{
@@ -60,7 +60,7 @@
 #  desired_count   = 1
 #
 #  tags = {
-#    Name = "nginx-service"
+#    Name = "nginx"
 #  }
 #
 #  load_balancer {
@@ -87,6 +87,10 @@
 #  vpc_id      = data.terraform_remote_state.base.outputs.vpc_id
 #  target_type = "ip"
 #
+#  tags = {
+#    Name = "nginx"
+#  }
+#
 #  health_check {
 #    enabled             = true
 #    healthy_threshold   = 2
@@ -112,5 +116,9 @@
 #    host_header {
 #      values = ["nginx.buetow.cloud"]
 #    }
+#  }
+#
+#  tags = {
+#    Name = "nginx"
 #  }
 #}

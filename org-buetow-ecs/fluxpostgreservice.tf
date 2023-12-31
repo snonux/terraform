@@ -11,11 +11,11 @@ resource "aws_lb" "fluxpostgres_nlb" {
     data.terraform_remote_state.base.outputs.public_subnet_b_id,
     data.terraform_remote_state.base.outputs.public_subnet_c_id,
   ]
-}
 
-#output "fluxpostgres_dns_name" {
-#  value = aws_lb.fluxpostgres_nlb.dns_name
-#}
+  tags = {
+    Name = "fluxpostgres"
+  }
+}
 
 resource "aws_lb_listener" "fluxpostgres_tcp" {
   load_balancer_arn = aws_lb.fluxpostgres_nlb.arn
@@ -26,6 +26,10 @@ resource "aws_lb_listener" "fluxpostgres_tcp" {
     type             = "forward"
     target_group_arn = aws_lb_target_group.fluxpostgres_tcp.arn
   }
+
+  tags = {
+    Name = "fluxpostgres"
+  }
 }
 
 resource "aws_lb_target_group" "fluxpostgres_tcp" {
@@ -34,31 +38,11 @@ resource "aws_lb_target_group" "fluxpostgres_tcp" {
   protocol    = "TCP"
   vpc_id      = data.terraform_remote_state.base.outputs.vpc_id
   target_type = "ip"
+
+  tags = {
+    Name = "fluxpostgres"
+  }
 }
-
-#resource "aws_route53_record" "a_record_fluxpostgres" {
-#  zone_id = data.terraform_remote_state.base.outputs.buetow_internal_zone_id
-#  name    = "fluxpostgres.buetow.internal."
-#  type    = "A"
-#
-#  alias {
-#    name                   = aws_lb.fluxpostgres_nlb.dns_name
-#    zone_id                = aws_lb.fluxpostgres_nlb.zone_id
-#    evaluate_target_health = true
-#  }
-#}
-
-#resource "aws_route53_record" "aaaa_record_fluxpostgres" {
-#  zone_id = data.terraform_remote_state.base.outputs.buetow_internal_zone_id
-#  name    = "fluxpostgres.buetow.internal."
-#  type    = "AAAA"
-#
-#  alias {
-#    name                   = aws_lb.fluxpostgres_nlb.dns_name
-#    zone_id                = aws_lb.fluxpostgres_nlb.zone_id
-#    evaluate_target_health = true
-#  }
-#}
 
 resource "aws_ecs_task_definition" "fluxpostgres" {
   family                   = "fluxpostgres"
@@ -69,7 +53,7 @@ resource "aws_ecs_task_definition" "fluxpostgres" {
   execution_role_arn       = aws_iam_role.ecs_execution_role.arn
 
   tags = {
-    Name = "fluxpostgres-task"
+    Name = "fluxpostgres"
   }
 
   volume {
@@ -141,7 +125,7 @@ resource "aws_security_group" "fluxpostgres" {
     ipv6_cidr_blocks = ["::/0"]
   }
 
-  # TODO: Required? Yes for contianer pull
+  # Required for contianer pull
   egress {
     from_port        = 0
     to_port          = 0
@@ -151,9 +135,10 @@ resource "aws_security_group" "fluxpostgres" {
   }
 
   tags = {
-    Name = "allow-fluxpostgres"
+    Name = "fluxpostgres"
   }
 }
+
 resource "aws_ecs_service" "fluxpostgres" {
   name                               = "fluxpostgres"
   cluster                            = aws_ecs_cluster.ecs_cluster.id
@@ -164,7 +149,7 @@ resource "aws_ecs_service" "fluxpostgres" {
   desired_count                      = 1
 
   tags = {
-    Name = "fluxpostgres-service"
+    Name = "fluxpostgres"
   }
 
   load_balancer {

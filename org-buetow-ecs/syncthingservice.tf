@@ -11,6 +11,10 @@ resource "aws_lb" "syncthing_nlb" {
     data.terraform_remote_state.base.outputs.public_subnet_b_id,
     data.terraform_remote_state.base.outputs.public_subnet_c_id,
   ]
+
+  tags = {
+    Name = "syncthing"
+  }
 }
 
 resource "aws_lb_listener" "syncthing_data_tcp" {
@@ -22,6 +26,10 @@ resource "aws_lb_listener" "syncthing_data_tcp" {
     type             = "forward"
     target_group_arn = aws_lb_target_group.syncthing_data_tcp.arn
   }
+
+  tags = {
+    Name = "syncthing"
+  }
 }
 
 resource "aws_lb_target_group" "syncthing_data_tcp" {
@@ -30,6 +38,10 @@ resource "aws_lb_target_group" "syncthing_data_tcp" {
   protocol    = "TCP"
   vpc_id      = data.terraform_remote_state.base.outputs.vpc_id
   target_type = "ip"
+
+  tags = {
+    Name = "syncthing"
+  }
 }
 
 resource "aws_route53_record" "a_record_syncthing" {
@@ -73,6 +85,10 @@ resource "aws_lb_target_group" "syncthing_ui_tg" {
     timeout             = 3
     matcher             = "200-299"
   }
+
+  tags = {
+    Name = "syncthing"
+  }
 }
 
 resource "aws_lb_listener_rule" "syncthing_ui_https_listener_rule" {
@@ -88,6 +104,10 @@ resource "aws_lb_listener_rule" "syncthing_ui_https_listener_rule" {
     host_header {
       values = ["syncthing.buetow.cloud"]
     }
+  }
+
+  tags = {
+    Name = "syncthing"
   }
 }
 
@@ -125,7 +145,7 @@ resource "aws_ecs_task_definition" "syncthing" {
   execution_role_arn       = aws_iam_role.ecs_execution_role.arn
 
   tags = {
-    Name = "syncthing-task"
+    Name = "syncthing"
   }
 
   volume {
@@ -245,9 +265,10 @@ resource "aws_security_group" "syncthing" {
   }
 
   tags = {
-    Name = "allow-syncthing"
+    Name = "syncthing"
   }
 }
+
 resource "aws_ecs_service" "syncthing" {
   name                               = "syncthing"
   cluster                            = aws_ecs_cluster.ecs_cluster.id
@@ -258,7 +279,7 @@ resource "aws_ecs_service" "syncthing" {
   desired_count                      = 1
 
   tags = {
-    Name = "syncthing-service"
+    Name = "syncthing"
   }
 
   load_balancer {

@@ -31,7 +31,7 @@ resource "aws_ecs_task_definition" "flux" {
   execution_role_arn       = aws_iam_role.ecs_execution_role.arn
 
   tags = {
-    Name = "flux-task"
+    Name = "flux"
   }
 
   container_definitions = jsonencode([{
@@ -88,7 +88,7 @@ resource "aws_ecs_service" "flux" {
   desired_count                      = 1
 
   tags = {
-    Name = "flux-service"
+    Name = "flux"
   }
 
   load_balancer {
@@ -115,6 +115,10 @@ resource "aws_lb_target_group" "flux_tg" {
   vpc_id      = data.terraform_remote_state.base.outputs.vpc_id
   target_type = "ip"
 
+  tags = {
+    Name = "flux"
+  }
+
   health_check {
     enabled             = true
     healthy_threshold   = 2
@@ -130,6 +134,10 @@ resource "aws_lb_target_group" "flux_tg" {
 resource "aws_lb_listener_rule" "flux_https_listener_rule" {
   listener_arn = data.terraform_remote_state.elb.outputs.alb_https_listener_arn
   priority     = 105
+
+  tags = {
+    Name = "flux"
+  }
 
   action {
     type             = "forward"

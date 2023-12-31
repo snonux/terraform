@@ -31,7 +31,7 @@ resource "aws_ecs_task_definition" "bag" {
   execution_role_arn       = aws_iam_role.ecs_execution_role.arn
 
   tags = {
-    Name = "bag-task"
+    Name = "bag"
   }
 
   volume {
@@ -96,7 +96,7 @@ resource "aws_ecs_service" "bag" {
   desired_count                      = 1
 
   tags = {
-    Name = "bag-service"
+    Name = "bag"
   }
 
   load_balancer {
@@ -133,6 +133,10 @@ resource "aws_lb_target_group" "bag_tg" {
     timeout             = 3
     matcher             = "200-299"
   }
+
+  tags = {
+    Name = "bag"
+  }
 }
 
 resource "aws_lb_listener_rule" "bag_https_listener_rule" {
@@ -148,5 +152,9 @@ resource "aws_lb_listener_rule" "bag_https_listener_rule" {
     host_header {
       values = ["bag.buetow.cloud"]
     }
+  }
+
+  tags = {
+    Name = "bag"
   }
 }

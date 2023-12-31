@@ -31,7 +31,7 @@
 #  execution_role_arn       = aws_iam_role.ecs_execution_role.arn
 #
 #  tags = {
-#    Name = "vault-task"
+#    Name = "vault"
 #  }
 #
 #  volume {
@@ -77,7 +77,7 @@
 #  desired_count                      = 1
 #
 #  tags = {
-#    Name = "vault-service"
+#    Name = "vault"
 #  }
 #
 #  load_balancer {
@@ -114,6 +114,10 @@
 #    timeout             = 3
 #    matcher             = "200-299"
 #  }
+#
+#  tags = {
+#    Name = "vault"
+#  }
 #}
 #
 #resource "aws_lb_listener_rule" "vault_https_listener_rule" {
@@ -129,5 +133,9 @@
 #    host_header {
 #      values = ["vault.buetow.cloud"]
 #    }
+#  }
+#
+#  tags = {
+#    Name = "vault"
 #  }
 #}

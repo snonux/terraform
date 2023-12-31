@@ -31,7 +31,7 @@ resource "aws_ecs_task_definition" "audiobookshelf" {
   execution_role_arn       = aws_iam_role.ecs_execution_role.arn
 
   tags = {
-    Name = "audiobookshelf-task"
+    Name = "audiobookshelf"
   }
 
   volume {
@@ -117,7 +117,7 @@ resource "aws_ecs_service" "audiobookshelf" {
   desired_count                      = 1
 
   tags = {
-    Name = "audiobookshelf-service"
+    Name = "audiobookshelf"
   }
 
   load_balancer {
@@ -144,6 +144,10 @@ resource "aws_lb_target_group" "audiobookshelf_tg" {
   vpc_id      = data.terraform_remote_state.base.outputs.vpc_id
   target_type = "ip"
 
+  tags = {
+    Name = "audiobookshelf"
+  }
+
   health_check {
     enabled             = true
     healthy_threshold   = 2
@@ -169,5 +173,9 @@ resource "aws_lb_listener_rule" "audiobookshelf_https_listener_rule" {
     host_header {
       values = ["audiobookshelf.buetow.cloud"]
     }
+  }
+
+  tags = {
+    Name = "audiobookshelf"
   }
 }
