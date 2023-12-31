@@ -81,7 +81,7 @@ resource "aws_ecs_task_definition" "fluxpostgres" {
       },
       {
         name  = "POSTGRES_PASSWORD",
-        value = var.fluxdb_password,
+        value = data.aws_secretsmanager_secret_version.fluxdb_password.secret_string
       }
     ],
     mountPoints = [
@@ -167,4 +167,12 @@ resource "aws_ecs_service" "fluxpostgres" {
     security_groups  = [aws_security_group.fluxpostgres.id]
     assign_public_ip = false
   }
+}
+
+data "aws_secretsmanager_secret" "fluxdb_password" {
+  name = "fluxdb_password"
+}
+
+data "aws_secretsmanager_secret_version" "fluxdb_password" {
+  secret_id = data.aws_secretsmanager_secret.fluxdb_password.id
 }
