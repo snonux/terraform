@@ -45,7 +45,7 @@ resource "aws_lb_listener" "https_listener" {
   port              = "443"
   protocol          = "HTTPS"
   ssl_policy        = "ELBSecurityPolicy-2016-08"
-  certificate_arn   = data.terraform_remote_state.base.outputs.buetow_cloud_certificate_arn
+  certificate_arn   = data.terraform_remote_state.base.outputs.zone_certificate_arn
 
   tags = {
     Name = "alb"
