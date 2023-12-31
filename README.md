@@ -15,11 +15,11 @@ Go to AWS Secrets manager manually and create it!
 
 ### Domain Domain TLS certificate
 
-Create DNS zone and TLS certificate in AWS manually. E.g. create `buetow.cloud` zone and a TLS certificate for `buetow.cloud,*.buetow.cloud`. Add the Certificate ARN to the `org-buetow-base` environment.
+Create DNS zone and TLS certificate in AWS manually. E.g. create `buetow.cloud` zone and a TLS certificate for `buetow.cloud,*.buetow.cloud`. Add the Certificate ARN to the `org-buetow-base`'s output as `zone_certificate_arn`. 
 
 ## Create base environment
 
-First create VPC, subnets and EFS in `org-buetow-base`
+Then, create VPC, subnets and EFS in `org-buetow-base`.
 
 ## Use the bastion to set up some EFS subdirs
 
@@ -39,6 +39,8 @@ Then, create subdirectories in EFS, using `org-buetow-bastion`. E.g., have somet
 /mnt/efs/ecs/wallabag/data/assets
 /mnt/efs/ecs/audiobookshelf
 ```
+
+Also, manually activate daily EFS backup via AWS console.
 
 ## Set up Application loadbalancer
 
