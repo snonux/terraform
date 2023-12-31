@@ -81,7 +81,7 @@ resource "aws_ecs_task_definition" "fluxpostgres" {
       },
       {
         name  = "POSTGRES_PASSWORD",
-        value = data.aws_secretsmanager_secret_version.fluxdb_password.secret_string
+        value = jsondecode(data.aws_secretsmanager_secret_version.fluxdb_password.secret_string)["fluxdb_password"],
       }
     ],
     mountPoints = [

@@ -48,7 +48,7 @@ resource "aws_ecs_task_definition" "flux" {
     environment = [
       {
         name  = "DATABASE_URL",
-        value = "postgres://miniflux:${data.aws_secretsmanager_secret_version.fluxdb_password.secret_string}@${aws_lb.fluxpostgres_nlb.dns_name}/miniflux?sslmode=disable",
+        value = "postgres://miniflux:${jsondecode(data.aws_secretsmanager_secret_version.fluxdb_password.secret_string)["fluxdb_password"]}@${aws_lb.fluxpostgres_nlb.dns_name}/miniflux?sslmode=disable",
       },
       {
         name  = "RUN_MIGRATIONS",
