@@ -37,7 +37,3 @@ In `org-buetow-elb`
 ## Now set up Fargate/ECS
 
 In `org-buetow-ecs`
-
-## Nextcloud
-
-In `org-buetow-nextcloud`
