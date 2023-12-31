@@ -42,3 +42,7 @@ output "zone_certificate_arn" {
   # For buetow.cloud and *.buetow.cloud
   value = "arn:aws:acm:eu-central-1:634617747016:certificate/fbf5627c-9a4c-4c62-9c33-038e140f3f12"
 }
+
+output "ecr_radicale_read_arn" {
+  value = aws_iam_policy.ecr_radicale_read.arn
+}
