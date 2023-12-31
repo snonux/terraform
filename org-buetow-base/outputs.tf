@@ -30,14 +30,15 @@ output "allow_outbound_sg_id" {
   value = aws_security_group.allow_outbound.id
 }
 
-output "buetow_cloud_zone_id" {
+output "zone_id" {
   value = data.aws_route53_zone.buetow_cloud.zone_id
 }
 
-#output "buetow_internal_zone_id" {
-#  value = aws_route53_zone.buetow_internal.zone_id
-#}
+output "zone_name" {
+  value = data.aws_route53_zone.buetow_cloud.name
+}
 
-output "buetow_cloud_certificate_arn" {
+output "zone_certificate_arn" {
+  # For buetow.cloud and *.buetow.cloud
   value = "arn:aws:acm:eu-central-1:634617747016:certificate/fbf5627c-9a4c-4c62-9c33-038e140f3f12"
 }

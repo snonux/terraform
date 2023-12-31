@@ -45,16 +45,16 @@ resource "aws_instance" "bastion" {
 }
 
 resource "aws_route53_record" "a_record" {
-  zone_id = data.terraform_remote_state.base.outputs.buetow_cloud_zone_id
-  name    = "bastion.buetow.cloud"
+  zone_id = data.terraform_remote_state.base.outputs.zone_id
+  name    = "bastion.${data.terraform_remote_state.base.outputs.zone_name}"
   type    = "A"
   ttl     = "300"
   records = [aws_instance.bastion.public_ip]
 }
 
 resource "aws_route53_record" "aaaa_record" {
-  zone_id = data.terraform_remote_state.base.outputs.buetow_cloud_zone_id
-  name    = "bastion.buetow.cloud"
+  zone_id = data.terraform_remote_state.base.outputs.zone_id
+  name    = "bastion.${data.terraform_remote_state.base.outputs.zone_name}"
   type    = "AAAA"
   ttl     = "300"
   records = aws_instance.bastion.ipv6_addresses
