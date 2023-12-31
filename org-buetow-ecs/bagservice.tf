@@ -1,6 +1,6 @@
 resource "aws_route53_record" "a_record_bag" {
   zone_id = data.terraform_remote_state.base.outputs.zone_id
-  name    = "bag.${data.terraform_remote_state.base.outputs.zone_id}."
+  name    = "bag.${data.terraform_remote_state.base.outputs.zone_name}."
   type    = "A"
 
   alias {
@@ -12,7 +12,7 @@ resource "aws_route53_record" "a_record_bag" {
 
 resource "aws_route53_record" "aaaa_record_bag" {
   zone_id = data.terraform_remote_state.base.outputs.zone_id
-  name    = "bag.${data.terraform_remote_state.base.outputs.zone_id}."
+  name    = "bag.${data.terraform_remote_state.base.outputs.zone_name}."
   type    = "AAAA"
 
   alias {
@@ -60,7 +60,7 @@ resource "aws_ecs_task_definition" "bag" {
     environment = [
       {
         name  = "SYMFONY__ENV__DOMAIN_NAME",
-        value = "https://bag.${data.terraform_remote_state.base.outputs.zone_id}"
+        value = "https://bag.${data.terraform_remote_state.base.outputs.zone_name}"
       }
     ],
     mountPoints = [
@@ -150,7 +150,7 @@ resource "aws_lb_listener_rule" "bag_https_listener_rule" {
 
   condition {
     host_header {
-      values = ["bag.${data.terraform_remote_state.base.outputs.zone_id}"]
+      values = ["bag.${data.terraform_remote_state.base.outputs.zone_name}"]
     }
   }
 

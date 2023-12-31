@@ -1,6 +1,6 @@
 #resource "aws_route53_record" "a_record_nginx" {
 #  zone_id = data.terraform_remote_state.base.outputs.zone_id
-#  name    = "nginx.${data.terraform_remote_state.base.outputs.zone_id}."
+#  name    = "nginx.${data.terraform_remote_state.base.outputs.zone_name}."
 #  type    = "A"
 #
 #  alias {
@@ -12,7 +12,7 @@
 #
 #resource "aws_route53_record" "aaaa_record_nginx" {
 #  zone_id = data.terraform_remote_state.base.outputs.zone_id
-#  name    = "nginx.${data.terraform_remote_state.base.outputs.zone_id}."
+#  name    = "nginx.${data.terraform_remote_state.base.outputs.zone_name}."
 #  type    = "AAAA"
 #
 #  alias {
@@ -114,7 +114,7 @@
 #
 #  condition {
 #    host_header {
-#      values = ["nginx.${data.terraform_remote_state.base.outputs.zone_id}"]
+#      values = ["nginx.${data.terraform_remote_state.base.outputs.zone_name}"]
 #    }
 #  }
 #
