@@ -39,7 +39,7 @@ resource "aws_ecs_task_definition" "flux" {
     image = "miniflux/miniflux:latest",
     depends_on = [{
       "containerName" : "fluxpostgres",
-      "condition" : "START"
+      "condition" : "RUNNING"
     }],
     portMappings = [{
       containerPort = 8080,
