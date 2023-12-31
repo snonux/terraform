@@ -1,6 +1,6 @@
 resource "aws_route53_record" "a_record_flux" {
-  zone_id = data.terraform_remote_state.base.outputs.buetow_cloud_zone_id
-  name    = "flux.buetow.cloud."
+  zone_id = data.terraform_remote_state.base.outputs.zone_id
+  name    = "flux.${data.terraform_remote_state.base.outputs.zone_id}."
   type    = "A"
 
   alias {
@@ -11,8 +11,8 @@ resource "aws_route53_record" "a_record_flux" {
 }
 
 resource "aws_route53_record" "aaaa_record_flux" {
-  zone_id = data.terraform_remote_state.base.outputs.buetow_cloud_zone_id
-  name    = "flux.buetow.cloud."
+  zone_id = data.terraform_remote_state.base.outputs.zone_id
+  name    = "flux.${data.terraform_remote_state.base.outputs.zone_id}."
   type    = "AAAA"
 
   alias {
@@ -146,7 +146,7 @@ resource "aws_lb_listener_rule" "flux_https_listener_rule" {
 
   condition {
     host_header {
-      values = ["flux.buetow.cloud"]
+      values = ["flux.${data.terraform_remote_state.base.outputs.zone_id}"]
     }
   }
 }

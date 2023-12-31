@@ -45,8 +45,8 @@ resource "aws_lb_target_group" "syncthing_data_tcp" {
 }
 
 resource "aws_route53_record" "a_record_syncthing" {
-  zone_id = data.terraform_remote_state.base.outputs.buetow_cloud_zone_id
-  name    = "syncthing.buetow.cloud."
+  zone_id = data.terraform_remote_state.base.outputs.zone_id
+  name    = "syncthing.${data.terraform_remote_state.base.outputs.zone_id}."
   type    = "A"
 
   alias {
@@ -57,8 +57,8 @@ resource "aws_route53_record" "a_record_syncthing" {
 }
 
 resource "aws_route53_record" "aaaa_record_syncthing" {
-  zone_id = data.terraform_remote_state.base.outputs.buetow_cloud_zone_id
-  name    = "syncthing.buetow.cloud."
+  zone_id = data.terraform_remote_state.base.outputs.zone_id
+  name    = "syncthing.${data.terraform_remote_state.base.outputs.zone_id}."
   type    = "AAAA"
 
   alias {
@@ -102,7 +102,7 @@ resource "aws_lb_listener_rule" "syncthing_ui_https_listener_rule" {
 
   condition {
     host_header {
-      values = ["syncthing.buetow.cloud"]
+      values = ["syncthing.${data.terraform_remote_state.base.outputs.zone_id}"]
     }
   }
 
@@ -113,8 +113,8 @@ resource "aws_lb_listener_rule" "syncthing_ui_https_listener_rule" {
 
 
 resource "aws_route53_record" "a_record_syncthing_data" {
-  zone_id = data.terraform_remote_state.base.outputs.buetow_cloud_zone_id
-  name    = "syncthing-data.buetow.cloud."
+  zone_id = data.terraform_remote_state.base.outputs.zone_id
+  name    = "syncthing-data.${data.terraform_remote_state.base.outputs.zone_id}."
   type    = "A"
 
   alias {
@@ -125,8 +125,8 @@ resource "aws_route53_record" "a_record_syncthing_data" {
 }
 
 resource "aws_route53_record" "aaaa_record_syncthing_data" {
-  zone_id = data.terraform_remote_state.base.outputs.buetow_cloud_zone_id
-  name    = "syncthing-data.buetow.cloud."
+  zone_id = data.terraform_remote_state.base.outputs.zone_id
+  name    = "syncthing-data.${data.terraform_remote_state.base.outputs.zone_id}."
   type    = "AAAA"
 
   alias {

@@ -1,6 +1,6 @@
 #resource "aws_route53_record" "a_record_vault" {
-#  zone_id = data.terraform_remote_state.base.outputs.buetow_cloud_zone_id
-#  name    = "vault.buetow.cloud."
+#  zone_id = data.terraform_remote_state.base.outputs.zone_id
+#  name    = "vault.${data.terraform_remote_state.base.outputs.zone_id}."
 #  type    = "A"
 #
 #  alias {
@@ -11,8 +11,8 @@
 #}
 #
 #resource "aws_route53_record" "aaaa_record_vault" {
-#  zone_id = data.terraform_remote_state.base.outputs.buetow_cloud_zone_id
-#  name    = "vault.buetow.cloud."
+#  zone_id = data.terraform_remote_state.base.outputs.zone_id
+#  name    = "vault.${data.terraform_remote_state.base.outputs.zone_id}."
 #  type    = "AAAA"
 #
 #  alias {
@@ -131,7 +131,7 @@
 #
 #  condition {
 #    host_header {
-#      values = ["vault.buetow.cloud"]
+#      values = ["vault.${data.terraform_remote_state.base.outputs.zone_id}"]
 #    }
 #  }
 #
