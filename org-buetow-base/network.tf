@@ -21,6 +21,10 @@ resource "aws_subnet" "public_subnet_a" {
   ipv6_cidr_block                 = cidrsubnet(aws_vpc.vpc.ipv6_cidr_block, 8, 1)
   availability_zone               = "eu-central-1a"
   map_public_ip_on_launch         = true
+
+  tags = {
+    Name = "vpc"
+  }
 }
 
 resource "aws_subnet" "public_subnet_b" {
@@ -30,6 +34,10 @@ resource "aws_subnet" "public_subnet_b" {
   ipv6_cidr_block                 = cidrsubnet(aws_vpc.vpc.ipv6_cidr_block, 8, 2)
   availability_zone               = "eu-central-1b"
   map_public_ip_on_launch         = true
+
+  tags = {
+    Name = "vpc"
+  }
 }
 
 resource "aws_subnet" "public_subnet_c" {
@@ -39,6 +47,10 @@ resource "aws_subnet" "public_subnet_c" {
   ipv6_cidr_block                 = cidrsubnet(aws_vpc.vpc.ipv6_cidr_block, 8, 3)
   availability_zone               = "eu-central-1c"
   map_public_ip_on_launch         = true
+
+  tags = {
+    Name = "vpc"
+  }
 }
 
 resource "aws_route_table" "route_table" {
@@ -81,6 +93,10 @@ resource "aws_security_group" "allow_ssh" {
     protocol         = "tcp"
     cidr_blocks      = ["0.0.0.0/0"]
     ipv6_cidr_blocks = ["::/0"]
+  }
+
+  tags = {
+    Name = "vpc"
   }
 }
 

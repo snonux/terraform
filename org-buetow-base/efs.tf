@@ -2,12 +2,13 @@ resource "aws_efs_file_system" "self_hosted_services_efs" {
   creation_token = "self-hosted-services-efs"
   encrypted      = true
 
-  #  backup_policy {
+  # Not supported by current version of Terraform I use
+  # backup_policy {
   #  status = "ENABLED"
   #}
 
   tags = {
-    Name = "self-hosted-services"
+    Name = "efs-self-hosted-services"
   }
 }
 
@@ -44,5 +45,10 @@ resource "aws_security_group" "efs_self_hosted_services_sg" {
     to_port     = 0
     protocol    = "-1"
     cidr_blocks = ["0.0.0.0/0"]
+  }
+
+
+  tags = {
+    Name = "efs-self-hosted-services"
   }
 }
