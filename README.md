@@ -7,6 +7,16 @@
 * Input variables, for configuring different service hosts.
 * Backup EFS, don't let `terraform destroy` erease all my data! Or create Backup
 
+## Manual steps
+
+### Create `fluxdb_password` 
+
+Go to AWS Secrets manager manually and create it!
+
+### Domain Domain TLS certificate
+
+Create DNS zone and TLS certificate in AWS manually. E.g. create `buetow.cloud` zone and a TLS certificate for `buetow.cloud,*.buetow.cloud`. Add the Certificate ARN to the `org-buetow-base` environment.
+
 ## Create base environment
 
 First create VPC, subnets and EFS in `org-buetow-base`
