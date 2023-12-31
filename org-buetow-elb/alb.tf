@@ -12,12 +12,20 @@ resource "aws_lb" "alb" {
     data.terraform_remote_state.base.outputs.public_subnet_b_id,
     data.terraform_remote_state.base.outputs.public_subnet_c_id,
   ]
+
+  tags = {
+    Name = "alb"
+  }
 }
 
 resource "aws_lb_listener" "http_listener" {
   load_balancer_arn = aws_lb.alb.arn
   port              = "80"
   protocol          = "HTTP"
+
+  tags = {
+    Name = "alb"
+  }
 
   default_action {
     type = "redirect"
@@ -39,6 +47,10 @@ resource "aws_lb_listener" "https_listener" {
   ssl_policy        = "ELBSecurityPolicy-2016-08"
   certificate_arn   = data.terraform_remote_state.base.outputs.buetow_cloud_certificate_arn
 
+  tags = {
+    Name = "alb"
+  }
+
   default_action {
     type             = "forward"
     target_group_arn = aws_lb_target_group.default_tg.arn
@@ -51,5 +63,9 @@ resource "aws_lb_target_group" "default_tg" {
   protocol    = "HTTP"
   vpc_id      = data.terraform_remote_state.base.outputs.vpc_id
   target_type = "ip"
+
+  tags = {
+    Name = "alb"
+  }
 }
 

@@ -14,6 +14,10 @@ provider "aws" {
 resource "aws_key_pair" "id_rsa_pub" {
   key_name   = "bastion-id-rsa-pub"
   public_key = file("${path.module}/id_rsa.pub")
+
+  tags = {
+    Name = "bastion"
+  }
 }
 
 resource "aws_instance" "bastion" {
@@ -55,18 +59,3 @@ resource "aws_route53_record" "aaaa_record" {
   ttl     = "300"
   records = aws_instance.bastion.ipv6_addresses
 }
-
-# For elastic IP
-
-#resource "aws_eip" "bastion" {
-#  instance = aws_instance.bastion.id
-#}
-
-#resource "aws_route53_record" "bastion_ec2_buetow_cloud" {
-#  zone_id = data.terraform_remote_state.base.outputs.buetow_cloud_zone_id
-#  name    = "bastion-ec2.buetow.cloud"
-#  type    = "A"
-#  ttl     = "300"
-#  records = [aws_instance.bastion.public_ip]
-#}
-
