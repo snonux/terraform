@@ -46,3 +46,7 @@ output "zone_certificate_arn" {
 output "ecr_radicale_read_arn" {
   value = aws_iam_policy.ecr_radicale_read.arn
 }
+
+output "ecr_anki_sync_server_read_arn" {
+  value = aws_iam_policy.ecr_anki_sync_server_read.arn
+}
