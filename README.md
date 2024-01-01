@@ -2,10 +2,6 @@
 
 ## TODO's
 
-* Collect uprecords for my EC2 instances
-* Contact and Calendar sync via ECS (migrate from Nextcloud)
-* Input variables, for configuring different service hosts.
-* Backup EFS, don't let `terraform destroy` erease all my data! Or create Backup
 * Cloudwatch monitoring with E-Mail alert of the services.
 
 ## Manual steps
