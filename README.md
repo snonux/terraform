@@ -2,6 +2,7 @@
 
 ## TODO's
 
+* Input variables which services (ECS) to start.
 * Cloudwatch monitoring with E-Mail alert of the services.
 
 ## Manual steps
