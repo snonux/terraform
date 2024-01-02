@@ -1,4 +1,5 @@
 resource "aws_route53_record" "a_record_audiobookshelf" {
+  count   = var.deploy_audiobookshelf ? 1 : 0
   zone_id = data.terraform_remote_state.base.outputs.zone_id
   name    = "audiobookshelf.${data.terraform_remote_state.base.outputs.zone_name}."
   type    = "A"
@@ -11,6 +12,7 @@ resource "aws_route53_record" "a_record_audiobookshelf" {
 }
 
 resource "aws_route53_record" "aaaa_record_audiobookshelf" {
+  count   = var.deploy_audiobookshelf ? 1 : 0
   zone_id = data.terraform_remote_state.base.outputs.zone_id
   name    = "audiobookshelf.${data.terraform_remote_state.base.outputs.zone_name}."
   type    = "AAAA"
@@ -23,6 +25,7 @@ resource "aws_route53_record" "aaaa_record_audiobookshelf" {
 }
 
 resource "aws_ecs_task_definition" "audiobookshelf" {
+  count                    = var.deploy_audiobookshelf ? 1 : 0
   family                   = "audiobookshelf"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
@@ -108,9 +111,10 @@ resource "aws_ecs_task_definition" "audiobookshelf" {
 }
 
 resource "aws_ecs_service" "audiobookshelf" {
+  count                              = var.deploy_audiobookshelf ? 1 : 0
   name                               = "audiobookshelf"
   cluster                            = aws_ecs_cluster.ecs_cluster.id
-  task_definition                    = aws_ecs_task_definition.audiobookshelf.arn
+  task_definition                    = aws_ecs_task_definition.audiobookshelf[0].arn
   launch_type                        = "FARGATE"
   deployment_maximum_percent         = 100
   deployment_minimum_healthy_percent = 0
@@ -121,7 +125,7 @@ resource "aws_ecs_service" "audiobookshelf" {
   }
 
   load_balancer {
-    target_group_arn = aws_lb_target_group.audiobookshelf_tg.arn
+    target_group_arn = aws_lb_target_group.audiobookshelf_tg[0].arn
     container_name   = "audiobookshelf" # Must match the name in your container definition
     container_port   = 80               # The port your container is listening on
   }
@@ -138,6 +142,7 @@ resource "aws_ecs_service" "audiobookshelf" {
 }
 
 resource "aws_lb_target_group" "audiobookshelf_tg" {
+  count       = var.deploy_audiobookshelf ? 1 : 0
   name        = "audiobookshelf-tg"
   port        = 80
   protocol    = "HTTP"
@@ -161,12 +166,13 @@ resource "aws_lb_target_group" "audiobookshelf_tg" {
 }
 
 resource "aws_lb_listener_rule" "audiobookshelf_https_listener_rule" {
+  count        = var.deploy_audiobookshelf ? 1 : 0
   listener_arn = data.terraform_remote_state.elb.outputs.alb_https_listener_arn
   priority     = 102
 
   action {
     type             = "forward"
-    target_group_arn = aws_lb_target_group.audiobookshelf_tg.arn
+    target_group_arn = aws_lb_target_group.audiobookshelf_tg[0].arn
   }
 
   condition {

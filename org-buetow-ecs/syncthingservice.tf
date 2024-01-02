@@ -1,10 +1,11 @@
 resource "aws_lb" "syncthing_nlb" {
+  count              = var.deploy_syncthing ? 1 : 0
   name               = "syncthing-nlb"
   internal           = false
   load_balancer_type = "network"
   ip_address_type    = "dualstack"
   security_groups = [
-    aws_security_group.syncthing.id,
+    aws_security_group.syncthing[0].id,
   ]
   subnets = [
     data.terraform_remote_state.base.outputs.public_subnet_a_id,
@@ -18,13 +19,14 @@ resource "aws_lb" "syncthing_nlb" {
 }
 
 resource "aws_lb_listener" "syncthing_data_tcp" {
-  load_balancer_arn = aws_lb.syncthing_nlb.arn
+  count             = var.deploy_syncthing ? 1 : 0
+  load_balancer_arn = aws_lb.syncthing_nlb[0].arn
   protocol          = "TCP"
   port              = 22000
 
   default_action {
     type             = "forward"
-    target_group_arn = aws_lb_target_group.syncthing_data_tcp.arn
+    target_group_arn = aws_lb_target_group.syncthing_data_tcp[0].arn
   }
 
   tags = {
@@ -33,6 +35,7 @@ resource "aws_lb_listener" "syncthing_data_tcp" {
 }
 
 resource "aws_lb_target_group" "syncthing_data_tcp" {
+  count       = var.deploy_syncthing ? 1 : 0
   name        = "syncthing-data-tcp"
   port        = 22000
   protocol    = "TCP"
@@ -45,6 +48,7 @@ resource "aws_lb_target_group" "syncthing_data_tcp" {
 }
 
 resource "aws_route53_record" "a_record_syncthing" {
+  count   = var.deploy_syncthing ? 1 : 0
   zone_id = data.terraform_remote_state.base.outputs.zone_id
   name    = "syncthing.${data.terraform_remote_state.base.outputs.zone_name}."
   type    = "A"
@@ -57,6 +61,7 @@ resource "aws_route53_record" "a_record_syncthing" {
 }
 
 resource "aws_route53_record" "aaaa_record_syncthing" {
+  count   = var.deploy_syncthing ? 1 : 0
   zone_id = data.terraform_remote_state.base.outputs.zone_id
   name    = "syncthing.${data.terraform_remote_state.base.outputs.zone_name}."
   type    = "AAAA"
@@ -69,6 +74,7 @@ resource "aws_route53_record" "aaaa_record_syncthing" {
 }
 
 resource "aws_lb_target_group" "syncthing_ui_tg" {
+  count       = var.deploy_syncthing ? 1 : 0
   name        = "syncthing-ui-tg"
   port        = 8384
   protocol    = "HTTP"
@@ -92,12 +98,13 @@ resource "aws_lb_target_group" "syncthing_ui_tg" {
 }
 
 resource "aws_lb_listener_rule" "syncthing_ui_https_listener_rule" {
+  count        = var.deploy_syncthing ? 1 : 0
   listener_arn = data.terraform_remote_state.elb.outputs.alb_https_listener_arn
   priority     = 104
 
   action {
     type             = "forward"
-    target_group_arn = aws_lb_target_group.syncthing_ui_tg.arn
+    target_group_arn = aws_lb_target_group.syncthing_ui_tg[0].arn
   }
 
   condition {
@@ -113,30 +120,33 @@ resource "aws_lb_listener_rule" "syncthing_ui_https_listener_rule" {
 
 
 resource "aws_route53_record" "a_record_syncthing_data" {
+  count   = var.deploy_syncthing ? 1 : 0
   zone_id = data.terraform_remote_state.base.outputs.zone_id
   name    = "syncthing-data.${data.terraform_remote_state.base.outputs.zone_name}."
   type    = "A"
 
   alias {
-    name                   = aws_lb.syncthing_nlb.dns_name
-    zone_id                = aws_lb.syncthing_nlb.zone_id
+    name                   = aws_lb.syncthing_nlb[0].dns_name
+    zone_id                = aws_lb.syncthing_nlb[0].zone_id
     evaluate_target_health = true
   }
 }
 
 resource "aws_route53_record" "aaaa_record_syncthing_data" {
+  count   = var.deploy_syncthing ? 1 : 0
   zone_id = data.terraform_remote_state.base.outputs.zone_id
   name    = "syncthing-data.${data.terraform_remote_state.base.outputs.zone_name}."
   type    = "AAAA"
 
   alias {
-    name                   = aws_lb.syncthing_nlb.dns_name
-    zone_id                = aws_lb.syncthing_nlb.zone_id
+    name                   = aws_lb.syncthing_nlb[0].dns_name
+    zone_id                = aws_lb.syncthing_nlb[0].zone_id
     evaluate_target_health = true
   }
 }
 
 resource "aws_ecs_task_definition" "syncthing" {
+  count                    = var.deploy_syncthing ? 1 : 0
   family                   = "syncthing"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
@@ -216,6 +226,7 @@ resource "aws_ecs_task_definition" "syncthing" {
 }
 
 resource "aws_security_group" "syncthing" {
+  count       = var.deploy_syncthing ? 1 : 0
   name        = "allow-syncthing"
   description = "Allow traffic on syncthing ports"
   vpc_id      = data.terraform_remote_state.base.outputs.vpc_id
@@ -270,9 +281,10 @@ resource "aws_security_group" "syncthing" {
 }
 
 resource "aws_ecs_service" "syncthing" {
+  count                              = var.deploy_syncthing ? 1 : 0
   name                               = "syncthing"
   cluster                            = aws_ecs_cluster.ecs_cluster.id
-  task_definition                    = aws_ecs_task_definition.syncthing.arn
+  task_definition                    = aws_ecs_task_definition.syncthing[0].arn
   launch_type                        = "FARGATE"
   deployment_maximum_percent         = 100
   deployment_minimum_healthy_percent = 0
@@ -283,13 +295,13 @@ resource "aws_ecs_service" "syncthing" {
   }
 
   load_balancer {
-    target_group_arn = aws_lb_target_group.syncthing_ui_tg.arn
+    target_group_arn = aws_lb_target_group.syncthing_ui_tg[0].arn
     container_name   = "syncthing" # Must match the name in your container definition
     container_port   = 8384        # The port your container is listening on
   }
 
   load_balancer {
-    target_group_arn = aws_lb_target_group.syncthing_data_tcp.arn
+    target_group_arn = aws_lb_target_group.syncthing_data_tcp[0].arn
     container_name   = "syncthing" # Must match the name in your container definition
     container_port   = 22000       # The port your container is listening on
   }
@@ -300,7 +312,7 @@ resource "aws_ecs_service" "syncthing" {
       data.terraform_remote_state.base.outputs.public_subnet_b_id,
       data.terraform_remote_state.base.outputs.public_subnet_c_id,
     ]
-    security_groups  = [aws_security_group.syncthing.id]
+    security_groups  = [aws_security_group.syncthing[0].id]
     assign_public_ip = true
   }
 }

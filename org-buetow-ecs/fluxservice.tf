@@ -1,4 +1,5 @@
 resource "aws_route53_record" "a_record_flux" {
+  count   = var.deploy_flux ? 1 : 0
   zone_id = data.terraform_remote_state.base.outputs.zone_id
   name    = "flux.${data.terraform_remote_state.base.outputs.zone_name}."
   type    = "A"
@@ -11,6 +12,7 @@ resource "aws_route53_record" "a_record_flux" {
 }
 
 resource "aws_route53_record" "aaaa_record_flux" {
+  count   = var.deploy_flux ? 1 : 0
   zone_id = data.terraform_remote_state.base.outputs.zone_id
   name    = "flux.${data.terraform_remote_state.base.outputs.zone_name}."
   type    = "AAAA"
@@ -23,6 +25,7 @@ resource "aws_route53_record" "aaaa_record_flux" {
 }
 
 resource "aws_ecs_task_definition" "flux" {
+  count                    = var.deploy_flux ? 1 : 0
   family                   = "flux"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
@@ -48,7 +51,7 @@ resource "aws_ecs_task_definition" "flux" {
     environment = [
       {
         name  = "DATABASE_URL",
-        value = "postgres://miniflux:${jsondecode(data.aws_secretsmanager_secret_version.fluxdb_password.secret_string)["fluxdb_password"]}@${aws_lb.fluxpostgres_nlb.dns_name}/miniflux?sslmode=disable",
+        value = "postgres://miniflux:${jsondecode(data.aws_secretsmanager_secret_version.fluxdb_password.secret_string)["fluxdb_password"]}@${aws_lb.fluxpostgres_nlb[0].dns_name}/miniflux?sslmode=disable",
       },
       {
         name  = "RUN_MIGRATIONS",
@@ -79,9 +82,10 @@ resource "aws_ecs_task_definition" "flux" {
 }
 
 resource "aws_ecs_service" "flux" {
+  count                              = var.deploy_flux ? 1 : 0
   name                               = "flux"
   cluster                            = aws_ecs_cluster.ecs_cluster.id
-  task_definition                    = aws_ecs_task_definition.flux.arn
+  task_definition                    = aws_ecs_task_definition.flux[0].arn
   launch_type                        = "FARGATE"
   deployment_maximum_percent         = 100
   deployment_minimum_healthy_percent = 0
@@ -92,7 +96,7 @@ resource "aws_ecs_service" "flux" {
   }
 
   load_balancer {
-    target_group_arn = aws_lb_target_group.flux_tg.arn
+    target_group_arn = aws_lb_target_group.flux_tg[0].arn
     container_name   = "flux" # Must match the name in your container definition
     container_port   = 8080   # The port your container is listening on
   }
@@ -109,6 +113,7 @@ resource "aws_ecs_service" "flux" {
 }
 
 resource "aws_lb_target_group" "flux_tg" {
+  count       = var.deploy_flux ? 1 : 0
   name        = "flux-tg"
   port        = 8080
   protocol    = "HTTP"
@@ -132,6 +137,7 @@ resource "aws_lb_target_group" "flux_tg" {
 }
 
 resource "aws_lb_listener_rule" "flux_https_listener_rule" {
+  count        = var.deploy_flux ? 1 : 0
   listener_arn = data.terraform_remote_state.elb.outputs.alb_https_listener_arn
   priority     = 105
 
@@ -141,7 +147,7 @@ resource "aws_lb_listener_rule" "flux_https_listener_rule" {
 
   action {
     type             = "forward"
-    target_group_arn = aws_lb_target_group.flux_tg.arn
+    target_group_arn = aws_lb_target_group.flux_tg[0].arn
   }
 
   condition {

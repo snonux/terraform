@@ -1,10 +1,11 @@
 resource "aws_lb" "fluxpostgres_nlb" {
+  count              = var.deploy_flux ? 1 : 0
   name               = "fluxpostgres-nlb"
   internal           = true
   load_balancer_type = "network"
   ip_address_type    = "dualstack"
   security_groups = [
-    aws_security_group.fluxpostgres.id,
+    aws_security_group.fluxpostgres[0].id,
   ]
   subnets = [
     data.terraform_remote_state.base.outputs.public_subnet_a_id,
@@ -18,13 +19,14 @@ resource "aws_lb" "fluxpostgres_nlb" {
 }
 
 resource "aws_lb_listener" "fluxpostgres_tcp" {
-  load_balancer_arn = aws_lb.fluxpostgres_nlb.arn
+  count             = var.deploy_flux ? 1 : 0
+  load_balancer_arn = aws_lb.fluxpostgres_nlb[0].arn
   protocol          = "TCP"
   port              = 5432
 
   default_action {
     type             = "forward"
-    target_group_arn = aws_lb_target_group.fluxpostgres_tcp.arn
+    target_group_arn = aws_lb_target_group.fluxpostgres_tcp[0].arn
   }
 
   tags = {
@@ -33,6 +35,7 @@ resource "aws_lb_listener" "fluxpostgres_tcp" {
 }
 
 resource "aws_lb_target_group" "fluxpostgres_tcp" {
+  count       = var.deploy_flux ? 1 : 0
   name        = "fluxpostgres-tcp"
   port        = 5432
   protocol    = "TCP"
@@ -45,6 +48,7 @@ resource "aws_lb_target_group" "fluxpostgres_tcp" {
 }
 
 resource "aws_ecs_task_definition" "fluxpostgres" {
+  count                    = var.deploy_flux ? 1 : 0
   family                   = "fluxpostgres"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
@@ -103,6 +107,7 @@ resource "aws_ecs_task_definition" "fluxpostgres" {
 }
 
 resource "aws_security_group" "fluxpostgres" {
+  count       = var.deploy_flux ? 1 : 0
   name        = "allow-fluxpostgres"
   description = "Allow traffic on fluxpostgres ports"
   vpc_id      = data.terraform_remote_state.base.outputs.vpc_id
@@ -140,9 +145,10 @@ resource "aws_security_group" "fluxpostgres" {
 }
 
 resource "aws_ecs_service" "fluxpostgres" {
+  count                              = var.deploy_flux ? 1 : 0
   name                               = "fluxpostgres"
   cluster                            = aws_ecs_cluster.ecs_cluster.id
-  task_definition                    = aws_ecs_task_definition.fluxpostgres.arn
+  task_definition                    = aws_ecs_task_definition.fluxpostgres[0].arn
   launch_type                        = "FARGATE"
   deployment_maximum_percent         = 100
   deployment_minimum_healthy_percent = 0
@@ -153,7 +159,7 @@ resource "aws_ecs_service" "fluxpostgres" {
   }
 
   load_balancer {
-    target_group_arn = aws_lb_target_group.fluxpostgres_tcp.arn
+    target_group_arn = aws_lb_target_group.fluxpostgres_tcp[0].arn
     container_name   = "fluxpostgres"
     container_port   = 5432
   }
@@ -164,7 +170,7 @@ resource "aws_ecs_service" "fluxpostgres" {
       data.terraform_remote_state.base.outputs.public_subnet_b_id,
       data.terraform_remote_state.base.outputs.public_subnet_c_id,
     ]
-    security_groups  = [aws_security_group.fluxpostgres.id]
+    security_groups  = [aws_security_group.fluxpostgres[0].id]
     assign_public_ip = false
   }
 }

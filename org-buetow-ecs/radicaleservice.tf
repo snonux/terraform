@@ -1,4 +1,5 @@
 resource "aws_route53_record" "a_record_radicale" {
+  count   = var.deploy_radicale ? 1 : 0
   zone_id = data.terraform_remote_state.base.outputs.zone_id
   name    = "radicale.${data.terraform_remote_state.base.outputs.zone_name}."
   type    = "A"
@@ -11,6 +12,7 @@ resource "aws_route53_record" "a_record_radicale" {
 }
 
 resource "aws_route53_record" "aaaa_record_radicale" {
+  count   = var.deploy_radicale ? 1 : 0
   zone_id = data.terraform_remote_state.base.outputs.zone_id
   name    = "radicale.${data.terraform_remote_state.base.outputs.zone_name}."
   type    = "AAAA"
@@ -23,6 +25,7 @@ resource "aws_route53_record" "aaaa_record_radicale" {
 }
 
 resource "aws_ecs_task_definition" "radicale" {
+  count                    = var.deploy_radicale ? 1 : 0
   family                   = "radicale"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
@@ -81,9 +84,10 @@ resource "aws_ecs_task_definition" "radicale" {
 }
 
 resource "aws_ecs_service" "radicale" {
+  count                              = var.deploy_radicale ? 1 : 0
   name                               = "radicale"
   cluster                            = aws_ecs_cluster.ecs_cluster.id
-  task_definition                    = aws_ecs_task_definition.radicale.arn
+  task_definition                    = aws_ecs_task_definition.radicale[0].arn
   launch_type                        = "FARGATE"
   deployment_maximum_percent         = 100
   deployment_minimum_healthy_percent = 0
@@ -94,7 +98,7 @@ resource "aws_ecs_service" "radicale" {
   }
 
   load_balancer {
-    target_group_arn = aws_lb_target_group.radicale_tg.arn
+    target_group_arn = aws_lb_target_group.radicale_tg[0].arn
     container_name   = "radicale" # Must match the name in your container definition
     container_port   = 8080       # The port your container is listening on
   }
@@ -111,6 +115,7 @@ resource "aws_ecs_service" "radicale" {
 }
 
 resource "aws_lb_target_group" "radicale_tg" {
+  count       = var.deploy_radicale ? 1 : 0
   name        = "radicale-tg"
   port        = 8080
   protocol    = "HTTP"
@@ -134,12 +139,13 @@ resource "aws_lb_target_group" "radicale_tg" {
 }
 
 resource "aws_lb_listener_rule" "radicale_https_listener_rule" {
+  count        = var.deploy_radicale ? 1 : 0
   listener_arn = data.terraform_remote_state.elb.outputs.alb_https_listener_arn
   priority     = 106
 
   action {
     type             = "forward"
-    target_group_arn = aws_lb_target_group.radicale_tg.arn
+    target_group_arn = aws_lb_target_group.radicale_tg[0].arn
   }
 
   condition {

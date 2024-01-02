@@ -1,4 +1,5 @@
 resource "aws_route53_record" "a_record_bag" {
+  count   = var.deploy_bag ? 1 : 0
   zone_id = data.terraform_remote_state.base.outputs.zone_id
   name    = "bag.${data.terraform_remote_state.base.outputs.zone_name}."
   type    = "A"
@@ -11,6 +12,7 @@ resource "aws_route53_record" "a_record_bag" {
 }
 
 resource "aws_route53_record" "aaaa_record_bag" {
+  count   = var.deploy_bag ? 1 : 0
   zone_id = data.terraform_remote_state.base.outputs.zone_id
   name    = "bag.${data.terraform_remote_state.base.outputs.zone_name}."
   type    = "AAAA"
@@ -23,6 +25,7 @@ resource "aws_route53_record" "aaaa_record_bag" {
 }
 
 resource "aws_ecs_task_definition" "bag" {
+  count                    = var.deploy_bag ? 1 : 0
   family                   = "bag"
   network_mode             = "awsvpc"
   requires_compatibilities = ["FARGATE"]
@@ -87,9 +90,10 @@ resource "aws_ecs_task_definition" "bag" {
 }
 
 resource "aws_ecs_service" "bag" {
+  count                              = var.deploy_bag ? 1 : 0
   name                               = "bag"
   cluster                            = aws_ecs_cluster.ecs_cluster.id
-  task_definition                    = aws_ecs_task_definition.bag.arn
+  task_definition                    = aws_ecs_task_definition.bag[0].arn
   launch_type                        = "FARGATE"
   deployment_maximum_percent         = 100
   deployment_minimum_healthy_percent = 0
@@ -100,7 +104,7 @@ resource "aws_ecs_service" "bag" {
   }
 
   load_balancer {
-    target_group_arn = aws_lb_target_group.bag_tg.arn
+    target_group_arn = aws_lb_target_group.bag_tg[0].arn
     container_name   = "bag" # Must match the name in your container definition
     container_port   = 80    # The port your container is listening on
   }
@@ -117,6 +121,7 @@ resource "aws_ecs_service" "bag" {
 }
 
 resource "aws_lb_target_group" "bag_tg" {
+  count       = var.deploy_bag ? 1 : 0
   name        = "bag-tg"
   port        = 80
   protocol    = "HTTP"
@@ -140,12 +145,13 @@ resource "aws_lb_target_group" "bag_tg" {
 }
 
 resource "aws_lb_listener_rule" "bag_https_listener_rule" {
+  count        = var.deploy_bag ? 1 : 0
   listener_arn = data.terraform_remote_state.elb.outputs.alb_https_listener_arn
   priority     = 101
 
   action {
     type             = "forward"
-    target_group_arn = aws_lb_target_group.bag_tg.arn
+    target_group_arn = aws_lb_target_group.bag_tg[0].arn
   }
 
   condition {
