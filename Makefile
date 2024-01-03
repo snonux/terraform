@@ -7,4 +7,10 @@ destroy:
 	cd org-buetow-ecs && terraform destroy -auto-approve
 	cd org-buetow-elb && terraform destroy -auto-approve
 	cd org-buetow-bastion && terraform destroy -auto-approve
+init:
+	cd org-buetow-base && terraform init
+	cd org-buetow-bastion && terraform init
+	cd org-buetow-elb && terraform init
+	cd org-buetow-ecs && terraform init
+
 recreate: destroy apply
