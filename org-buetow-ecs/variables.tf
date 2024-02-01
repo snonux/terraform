@@ -31,7 +31,7 @@ variable "deploy_radicale" {
 variable "deploy_syncthing" {
   description = "Deploy Syncthing Server?"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "deploy_vault" {
