@@ -13,7 +13,7 @@ Go to AWS Secrets manager manually and create it!
 
 ### Domain Domain TLS certificate
 
-Create DNS zone and TLS certificate in AWS manually. E.g. create `buetow.cloud` zone and a TLS certificate for `buetow.cloud,*.buetow.cloud`. Add the Certificate ARN to the `org-buetow-base`'s output as `zone_certificate_arn`. 
+Create DNS zone and TLS certificate in AWS manually. E.g. create `cool.buetow.org` zone and a TLS certificate for `cool.buetow.org,*.cool.buetow.org`. Add the Certificate ARN to the `org-buetow-base`'s output as `zone_certificate_arn`. 
 
 ## Create base environment
 

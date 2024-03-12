@@ -31,16 +31,16 @@ output "allow_outbound_sg_id" {
 }
 
 output "zone_id" {
-  value = data.aws_route53_zone.buetow_cloud.zone_id
+  value = data.aws_route53_zone.cool_buetow_org.zone_id
 }
 
 output "zone_name" {
-  value = data.aws_route53_zone.buetow_cloud.name
+  value = data.aws_route53_zone.cool_buetow_org.name
 }
 
 output "zone_certificate_arn" {
-  # For buetow.cloud and *.buetow.cloud
-  value = "arn:aws:acm:eu-central-1:634617747016:certificate/fbf5627c-9a4c-4c62-9c33-038e140f3f12"
+  # For cool.buetow.org and *.cool.buetow.org
+  value = "arn:aws:acm:eu-central-1:634617747016:certificate/834a2baa-5aa6-4bdf-8945-9189f3b9cee6"
 }
 
 output "ecr_radicale_read_arn" {
