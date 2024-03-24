@@ -16,6 +16,12 @@ variable "deploy_bag" {
   default     = true
 }
 
+variable "deploy_gpodder" {
+  description = "Deploy Mcro GPodder Server?"
+  type        = bool
+  default     = true
+}
+
 variable "deploy_nginx" {
   description = "Deploy Nginx Server?"
   type        = bool
