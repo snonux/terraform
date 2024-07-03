@@ -1,12 +1,18 @@
+provider "kubernetes" {
+  host                   = data.aws_eks_cluster.cluster.endpoint
+  cluster_ca_certificate = base64decode(data.aws_eks_cluster.cluster.certificate_authority.0.data)
+  token                  = data.aws_eks_cluster_auth.cluster.token
+}
+
 resource "aws_eks_cluster" "org_buetow_eks" {
   name     = var.cluster_name
   role_arn = aws_iam_role.eks_role.arn
 
   vpc_config {
     subnet_ids = [
-        data.terraform_remote_state.base.outputs.public_subnet_a_id,
-        data.terraform_remote_state.base.outputs.public_subnet_b_id,
-        data.terraform_remote_state.base.outputs.public_subnet_c_id,
+      data.terraform_remote_state.base.outputs.public_subnet_a_id,
+      data.terraform_remote_state.base.outputs.public_subnet_b_id,
+      data.terraform_remote_state.base.outputs.public_subnet_c_id,
     ]
   }
 
@@ -17,12 +23,12 @@ resource "aws_eks_cluster" "org_buetow_eks" {
 }
 
 resource "aws_eks_node_group" "example" {
-  cluster_name    = aws_eks_cluster.org_buetow_eks.name
-  node_role_arn   = aws_iam_role.eks_nodegroup_role.arn
-  subnet_ids      = [
-        data.terraform_remote_state.base.outputs.public_subnet_a_id,
-        data.terraform_remote_state.base.outputs.public_subnet_b_id,
-        data.terraform_remote_state.base.outputs.public_subnet_c_id,
+  cluster_name  = aws_eks_cluster.org_buetow_eks.name
+  node_role_arn = aws_iam_role.eks_nodegroup_role.arn
+  subnet_ids = [
+    data.terraform_remote_state.base.outputs.public_subnet_a_id,
+    data.terraform_remote_state.base.outputs.public_subnet_b_id,
+    data.terraform_remote_state.base.outputs.public_subnet_c_id,
   ]
   scaling_config {
     desired_size = 2

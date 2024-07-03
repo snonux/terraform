@@ -32,11 +32,11 @@ resource "aws_iam_role" "efs_csi_role" {
     Version : "2012-10-17"
     Statement : [
       {
-        Effect     : "Allow"
-        Principal  : {
+        Effect : "Allow"
+        Principal : {
           Service : "eks.amazonaws.com"
         }
-        Action     : "sts:AssumeRole"
+        Action : "sts:AssumeRole"
       }
     ]
   })
@@ -48,9 +48,9 @@ resource "aws_iam_role_policy_attachment" "efs_csi_role_policy_attachment" {
 }
 
 resource "aws_eks_addon" "efs_csi_addon" {
-  cluster_name      = var.cluster_name
-  addon_name        = "aws-efs-csi-driver"
-  addon_version     = "v2.0.4-eksbuild.1"  # You can specify exact version if needed.
+  cluster_name             = var.cluster_name
+  addon_name               = "aws-efs-csi-driver"
+  addon_version            = "v2.0.4-eksbuild.1" # You can specify exact version if needed.
   service_account_role_arn = aws_iam_role.efs_csi_role.arn
 
   depends_on = [
