@@ -11,3 +11,4 @@ terraform {
 provider "aws" {
   region = "eu-central-1" # or your preferred AWS region
 }
+
