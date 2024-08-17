@@ -57,6 +57,10 @@ resource "aws_ecs_task_definition" "flux" {
         name  = "RUN_MIGRATIONS",
         value = "1",
       },
+      {
+        name  = "POLLING_FREQUENCY",
+        value = "10",
+      },
       #{
       #  name  = "CREATE_ADMIN",
       #  value = "1",
