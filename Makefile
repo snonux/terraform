@@ -1,4 +1,4 @@
-.PHONY: apply destroy sleep for2h init recreate
+# .PHONY: apply destroy sleep for2h init recreate
 
 apply: 
 	cd org-buetow-base && terraform apply -auto-approve 

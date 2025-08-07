@@ -7,31 +7,13 @@ variable "deploy_anki" {
 variable "deploy_audiobookshelf" {
   description = "Deploy Audio Bool Shelf Server?"
   type        = bool
-  default     = true
+  default     = false
 }
 
 variable "deploy_bag" {
   description = "Deploy Wallabag Server?"
   type        = bool
-  default     = true
-}
-
-variable "deploy_gpodder" {
-  description = "Deploy Mcro GPodder Server?"
-  type        = bool
-  default     = true
-}
-
-variable "deploy_nginx" {
-  description = "Deploy Nginx Server?"
-  type        = bool
   default     = false
-}
-
-variable "deploy_radicale" {
-  description = "Deploy Radicale Server?"
-  type        = bool
-  default     = true
 }
 
 variable "deploy_syncthing" {
@@ -40,10 +22,28 @@ variable "deploy_syncthing" {
   default     = false
 }
 
+variable "deploy_nginx" {
+  description = "Deploy Nginx Server?"
+  type        = bool
+  default     = false
+}
+
+variable "deploy_gpodder" {
+  description = "Deploy Mcro GPodder Server?"
+  type        = bool
+  default     = true
+}
+
+variable "deploy_radicale" {
+  description = "Deploy Radicale Server?"
+  type        = bool
+  default     = true
+}
+
 variable "deploy_vault" {
   description = "Deploy Vaultwarden Server?"
   type        = bool
-  default     = false
+  default     = true
 }
 
 variable "deploy_flux" {
