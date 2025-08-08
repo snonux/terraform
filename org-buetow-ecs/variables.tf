@@ -1,3 +1,15 @@
+variable "deploy_vault" {
+  description = "Deploy Vaultwarden Server?"
+  type        = bool
+  default     = false
+}
+
+variable "deploy_flux" {
+  description = "Deploy Miniflux Server?"
+  type        = bool
+  default     = false
+}
+
 variable "deploy_anki" {
   description = "Deploy Anki Sync Server?"
   type        = bool
@@ -40,14 +52,3 @@ variable "deploy_radicale" {
   default     = true
 }
 
-variable "deploy_vault" {
-  description = "Deploy Vaultwarden Server?"
-  type        = bool
-  default     = true
-}
-
-variable "deploy_flux" {
-  description = "Deploy Miniflux Server?"
-  type        = bool
-  default     = true
-}
