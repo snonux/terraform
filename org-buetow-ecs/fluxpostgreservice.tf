@@ -112,22 +112,15 @@ resource "aws_security_group" "fluxpostgres" {
   description = "Allow traffic on fluxpostgres ports"
   vpc_id      = data.terraform_remote_state.base.outputs.vpc_id
 
+  # Only Miniflux, inside the VPC, talks to the database (through the
+  # internal NLB). PostgreSQL does not use UDP.
   ingress {
-    description      = "Allow inbound TCP traffic on fluxpostgresQL port"
+    description      = "Allow inbound TCP traffic on fluxpostgresQL port from the VPC"
     from_port        = 5432
     to_port          = 5432
     protocol         = "tcp"
-    cidr_blocks      = ["0.0.0.0/0"]
-    ipv6_cidr_blocks = ["::/0"]
-  }
-
-  ingress {
-    description      = "Allow inbound UDP traffic on fluxpostgresQL port"
-    from_port        = 5432
-    to_port          = 5432
-    protocol         = "udp"
-    cidr_blocks      = ["0.0.0.0/0"]
-    ipv6_cidr_blocks = ["::/0"]
+    cidr_blocks      = [data.aws_vpc.base.cidr_block]
+    ipv6_cidr_blocks = [data.aws_vpc.base.ipv6_cidr_block]
   }
 
   # Required for contianer pull

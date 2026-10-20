@@ -15,3 +15,9 @@ data "terraform_remote_state" "elb" {
     region = "eu-central-1"
   }
 }
+
+# The base VPC, for security group rules that only admit traffic from
+# inside it.
+data "aws_vpc" "base" {
+  id = data.terraform_remote_state.base.outputs.vpc_id
+}
