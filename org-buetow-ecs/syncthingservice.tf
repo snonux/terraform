@@ -231,13 +231,16 @@ resource "aws_security_group" "syncthing" {
   description = "Allow traffic on syncthing ports"
   vpc_id      = data.terraform_remote_state.base.outputs.vpc_id
 
+  # The web UI is published through the HTTPS ALB only. Without this
+  # restriction it was also reachable over plain HTTP on the task's public
+  # IP.
   ingress {
-    description      = "Allow inbound TCP traffic on port 8384"
+    description      = "Allow inbound TCP traffic on port 8384 from the VPC (ALB)"
     from_port        = 8384
     to_port          = 8384
     protocol         = "tcp"
-    cidr_blocks      = ["0.0.0.0/0"]
-    ipv6_cidr_blocks = ["::/0"]
+    cidr_blocks      = [data.aws_vpc.base.cidr_block]
+    ipv6_cidr_blocks = [data.aws_vpc.base.ipv6_cidr_block]
   }
 
   ingress {
